@@ -89,7 +89,7 @@ e.g:
     }
  }
 ```
-### 2. Fragment:
+### 2. Fragment: (similar with DialogFragment)
 ```
  class ExampleFragment : BaseFragment<FragmentExampleBinding>() {
      override fun getLayoutId(): Int {
@@ -115,5 +115,5 @@ e.g:
 ### 3. ViewModel
 ```
 class ExampleViewModel: BaseViewModel() // or BaseActivityViewModel
-
+```
 Updating...
