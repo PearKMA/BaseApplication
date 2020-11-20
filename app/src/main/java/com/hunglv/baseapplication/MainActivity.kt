@@ -1,7 +1,5 @@
 package com.hunglv.baseapplication
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import com.hunglv.baseapplication.databinding.ActivityMainBinding
 import com.hunglv.mylibrary.activity.BaseActivity
 
@@ -15,6 +13,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMainActivityListener 
     }
 
     override fun onTestClick() {
+        binding.tvTest.text = getString(R.string.app_name)
+    }
+
+    override fun onAlphaTestClick() {
         binding.tvTest.text = getString(R.string.app_name)
     }
 }

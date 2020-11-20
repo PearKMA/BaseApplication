@@ -6,12 +6,11 @@ import com.hunglv.mylibrary.widgets.*
 
 private const val DEFAULT_DEBOUNCE_INTERVAL = 500L
 
+private var mLastClickTime = 0L
+
 abstract class DebounceClickListener(
     private val maxTime: Long = DEFAULT_DEBOUNCE_INTERVAL
 ) : View.OnClickListener {
-    // region Const and Fields
-    private var mLastClickTime = 0L
-    // endregion
 
     // region override function
     override fun onClick(v: View?) {
@@ -30,9 +29,6 @@ abstract class DebounceClickListener(
 abstract class AlphaDebounceClickListener(
     private val maxTime: Long = DEFAULT_DEBOUNCE_INTERVAL
 ) : OnAlphaViewListener {
-    // region Const and Fields
-    private var mLastClickTime = 0L
-    // endregion
 
     // region override function
     override fun onClick(v: View?) {
