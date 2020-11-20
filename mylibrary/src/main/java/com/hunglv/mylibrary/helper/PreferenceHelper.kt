@@ -1,4 +1,4 @@
-package com.hunglv.mylibrary.model.helper
+package com.hunglv.mylibrary.helper
 
 import android.content.Context
 import android.content.SharedPreferences
