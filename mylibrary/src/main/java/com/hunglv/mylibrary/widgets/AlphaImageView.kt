@@ -15,13 +15,10 @@ class AlphaImageView : AppCompatImageView {
         defStyleAttr
     )
 
-    interface OnAlphaImageListener {
-        fun onClick()
-    }
 
-    private var onClickView: OnAlphaImageListener? = null
+    private var onClickView: OnAlphaViewListener? = null
 
-    fun setOnAlphaImageListener(onClickView: OnAlphaImageListener) {
+    fun setOnAlphaImageListener(onClickView: OnAlphaViewListener) {
         this.onClickView = onClickView
     }
 
@@ -31,7 +28,7 @@ class AlphaImageView : AppCompatImageView {
             when (event.action) {
                 MotionEvent.ACTION_UP -> {
                     alpha = 1f
-                    onClickView?.onClick()
+                    onClickView?.onClick(this)
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     alpha = 1f

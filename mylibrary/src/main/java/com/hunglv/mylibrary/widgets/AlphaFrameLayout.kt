@@ -15,13 +15,10 @@ class AlphaFrameLayout : FrameLayout {
         defStyleAttr
     )
 
-    interface OnAlphaLayoutListener {
-        fun onClick()
-    }
 
-    private var onClickView: OnAlphaLayoutListener? = null
+    private var onClickView: OnAlphaViewListener? = null
 
-    fun setOnAlphaLayoutListener(onClickView: OnAlphaLayoutListener) {
+    fun setOnAlphaLayoutListener(onClickView: OnAlphaViewListener) {
         this.onClickView = onClickView
     }
 
@@ -31,7 +28,7 @@ class AlphaFrameLayout : FrameLayout {
             when (event.action) {
                 MotionEvent.ACTION_UP -> {
                     alpha = 1f
-                    onClickView?.onClick()
+                    onClickView?.onClick(this)
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     alpha = 1f

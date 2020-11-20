@@ -15,13 +15,9 @@ class AlphaLinearLayout : LinearLayout {
         defStyleAttr
     )
 
-    interface OnAlphaLayoutListener {
-        fun onClick()
-    }
+    private var onClickView: OnAlphaViewListener? = null
 
-    private var onClickView: OnAlphaLayoutListener? = null
-
-    fun setOnAlphaLayoutListener(onClickView: OnAlphaLayoutListener) {
+    fun setOnAlphaLayoutListener(onClickView: OnAlphaViewListener) {
         this.onClickView = onClickView
     }
 
@@ -31,7 +27,7 @@ class AlphaLinearLayout : LinearLayout {
             when (event.action) {
                 MotionEvent.ACTION_UP -> {
                     alpha = 1f
-                    onClickView?.onClick()
+                    onClickView?.onClick(this)
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     alpha = 1f

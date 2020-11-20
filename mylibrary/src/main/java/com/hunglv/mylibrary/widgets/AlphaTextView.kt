@@ -15,14 +15,9 @@ class AlphaTextView : AppCompatTextView {
         defStyleAttr
     )
 
+    private var onClickView: OnAlphaViewListener? = null
 
-    interface OnAlphaTextListener {
-        fun onClick()
-    }
-
-    private var onClickView: OnAlphaTextListener? = null
-
-    fun setOnAlphaTextListener(onClickView: OnAlphaTextListener) {
+    fun setOnAlphaTextListener(onClickView: OnAlphaViewListener) {
         this.onClickView = onClickView
     }
 
@@ -32,7 +27,7 @@ class AlphaTextView : AppCompatTextView {
             when (event.action) {
                 MotionEvent.ACTION_UP -> {
                     alpha = 1f
-                    onClickView?.onClick()
+                    onClickView?.onClick(this)
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     alpha = 1f

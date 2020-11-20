@@ -134,21 +134,19 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // endregion
 
     // region safe navigation
-    protected fun onNavigate(viewId: Int, deepLink: Int){
-        if (findNavController().currentDestination?.id == viewId){
-            findNavController().navigate(deepLink)
-        }
-    }
-
     protected fun onNavigateUp(viewId: Int){
         if (findNavController().currentDestination?.id == viewId){
             findNavController().navigateUp()
         }
     }
 
-    protected fun onNavigateWithBundle(viewId: Int, deepLink: Int, bundle: Bundle){
-        if (findNavController().currentDestination?.id == viewId){
-            findNavController().navigate(deepLink, bundle)
+    protected fun onNavigate(viewId: Int, deepLink: Int, bundle: Bundle? = null) {
+        if (findNavController().currentDestination?.id == viewId) {
+            if (bundle == null) {
+                findNavController().navigate(deepLink)
+            } else {
+                findNavController().navigate(deepLink, bundle)
+            }
         }
     }
     // endregion
