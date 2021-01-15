@@ -1,3 +1,3 @@
-include ':mylibrary'
+include ':baselibrary'
 include ':app'
 rootProject.name = "BaseApplication"

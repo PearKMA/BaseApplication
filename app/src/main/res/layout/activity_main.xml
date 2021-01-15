@@ -6,7 +6,7 @@
     <data>
         <variable
             name="listener"
-            type="com.hunglv.baseapplication.IMainActivityListener" />
+            type="com.baseandroid.baseapplication.IMainActivityListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,7 +26,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.hunglv.mylibrary.widgets.AlphaTextView
+        <com.baseandroid.mylibrary.widgets.AlphaTextView
             alphaTextDebounceClick="@{() -> listener.onAlphaTestClick()}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
