@@ -2,9 +2,9 @@ package com.baseandroid.baseapplication
 
 import android.view.View
 import androidx.databinding.BindingAdapter
-import com.baseandroid.mylibrary.utils.extension.onDebounceClick
-import com.baseandroid.mylibrary.widgets.AlphaTextView
-import com.baseandroid.mylibrary.widgets.OnAlphaViewListener
+import com.baseandroid.baselibrary.utils.extension.onDebounceClick
+import com.baseandroid.baselibrary.widgets.AlphaTextView
+import com.baseandroid.baselibrary.widgets.OnAlphaViewListener
 
 
 @BindingAdapter("debounceClick")

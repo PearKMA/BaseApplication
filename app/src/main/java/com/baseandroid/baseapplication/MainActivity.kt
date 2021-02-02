@@ -1,7 +1,7 @@
 package com.baseandroid.baseapplication
 
 import com.baseandroid.baseapplication.databinding.ActivityMainBinding
-import com.baseandroid.mylibrary.activity.BaseActivity
+import com.baseandroid.baselibrary.activity.BaseActivity
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), IMainActivityListener {
     override fun getLayoutId(): Int {

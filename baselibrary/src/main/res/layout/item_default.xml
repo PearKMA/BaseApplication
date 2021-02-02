@@ -6,11 +6,11 @@
 
         <variable
             name="item"
-            type="com.baseandroid.mylibrary.model.BaseModel" />
+            type="com.baseandroid.baselibrary.model.BaseModel" />
 
         <variable
             name="listener"
-            type="com.baseandroid.mylibrary.adapter.BaseAdapter.ListItemListener" />
+            type="com.baseandroid.baselibrary.adapter.BaseAdapter.ListItemListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
