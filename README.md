@@ -69,8 +69,26 @@ e.g:
     implementation 'com.github.PearKMA:BaseApplication:0.1.1'
 ```
 ## How to use:
-### 1. Activity:
+### 1. Application:
 ```
+@HiltAndroidApp
+class App : Application(){
+    companion object {
+        var instance: App? = null
+        lateinit var prefHelper: PreferenceHelper
+            private set
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        instance = this
+        prefHelper = PreferenceHelper()
+    }
+}
+```
+### 2. Activity:
+```
+ @AndroidEntryPoint	// for Hilt
  class ExampleActivity : BaseActivity<ActivityExampleBinding>(){
      override fun getLayoutId(): Int {
         return R.layout.activity_example
@@ -89,8 +107,9 @@ e.g:
     }
  }
 ```
-### 2. Fragment: (similar with DialogFragment)
+### 3. Fragment: (similar with Dialog)
 ```
+ @AndroidEntryPoint // for Hilt
  class ExampleFragment : BaseFragment<FragmentExampleBinding>() {
      override fun getLayoutId(): Int {
         return R.layout.fragment_example
@@ -112,8 +131,164 @@ e.g:
         ... your code
     }
 ```
-### 3. ViewModel
+### 4. RecyclerView Adapter
+- Support max 1 data variable (item) & 1 listener (listener)
+#### 1. Normal adapter
+```
+val adapter by lazy {
+    BaseAdapter<T>(layoutInflater, layoutId).apply {
+        listener = this@Fragment
+    }
+}
+adapter.data = data
+```
+#### 2. List adapter
+```
+val adapter by lazy {
+    BaseListAdapter<T>(diffCallback,layoutInflater, layoutId).apply {
+        listener = this@Fragment
+    }
+}
+adapter.submitList() - it?.let(adapter::submitList)
+```
+
+### 5. Repository (using Hilt)
+```
+    class ARepository @Inject constructor(){}
+```
+With Room:
+```
+class BRepository @Inject constructor(
+    private val itemDao: ItemDao
+) {}
+```
+### 6. ViewModel
 ```
 class ExampleViewModel: BaseViewModel() // or BaseActivityViewModel
 ```
-Updating...
+if using Hilt:
+```
+class AViewModel @ViewModelInject constructor(
+    private val ARepository: ARepository,
+    @Assisted private val savedStateHandle: SavedStateHandle
+)
+```
+Register files change:
+```
+class ExampleViewModel: BaseViewModel(){
+    private var contentObserver: ContentObserver? = null
+    fun loadData(){
+        ...
+	if (contentObserver == null) {
+                contentObserver = getApplication<Application>().contentResolver.registerObserver(
+                    MediaStore.Files.getContentUri("external")
+                ) {
+                    loadData()
+                }
+            }
+    }
+    override fun onCleared() {
+        contentObserver?.let {
+            getApplication<Application>().contentResolver.unregisterContentObserver(it)
+        }
+    }
+}
+/**
+ * Convenience extension method to register a [ContentObserver] given a lambda.
+ */
+private fun ContentResolver.registerObserver(
+    uri: Uri,
+    observer: (selfChange: Boolean) -> Unit
+): ContentObserver {
+    val contentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) {
+            observer(selfChange)
+        }
+    }
+    registerContentObserver(uri, true, contentObserver)
+    return contentObserver
+}
+```
+### 7. Room (using Hilt)
+#### 1. Model
+```
+@Entity(tableName = "<name>")
+data class A(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    var id: T
+) : BaseModel()
+```
+#### 4. Dao
+```
+@Dao
+interface ItemDao{
+     @Query("Select ...") // 
+     suspend fun ...
+}
+```
+#### 3. AppDatabase
+```
+@Database(
+    entities = [A::class],
+    version = 1
+)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun itemDao(): ItemDao
+}
+```
+#### 4. di- AppModule
+```
+@Module
+@InstallIn(ApplicationComponent::class)
+object AppModule {
+    @Singleton // Tell Dagger-Hilt to create a singleton accessible everywhere in ApplicationComponent (i.e. everywhere in the application)
+    @Provides
+    fun provideItemFavorite(
+        @ApplicationContext app: Context
+    ) = Room.databaseBuilder(
+        app,
+        AppDatabase::class.java,
+        "<name table>"
+    ).build()
+
+    @Singleton
+    @Provides
+    fun provideItemDao(db: AppDatabase) =
+        db.itemDao() // The reason we can implement a Dao for the database
+}
+```
+### 8: Shared Preferrence
+```
+private lateinit var pref: SharedPreferences
+pref = App.prefHelper.pref(requireContext(), <name pref>)
+pref.getString(<Key>,<Default>)
+pref.edit {
+    putString(...)
+}
+```
+### 9: Utils
+#### 1. Debounce click
+```
+View.onDebounceClick(delay){
+   //..
+}
+```
+#### 2. View
+- check visibility: .isVisible(), .isGone(), .isInvisible()
+- set visibility: .visible(), .gone(), .invisible()
+- keyboard: EditText.showKeyboard(), EditText.hideKeyboard()
+- observer livedata:  .observer(liveData,{})
+- Glide: loadNormal, loadCenterCrop, loadRoundedCorner, loadBackground
+- time: 
+	+video: formatTime, formatFullTime
+	+current time(HH:mm:ss): getCurrentTime
+	+current date(dd/MM/yyyy_HH/mm/ss): getCurrentDate
+	+custom: formatTimePattern(millis, pattern, locale)
+#### 3.AudioHelper
+```
+val audioHelper = AudioHelper(context){ it ->
+    true = loss audio
+}
+```
+...
