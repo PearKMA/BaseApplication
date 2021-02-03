@@ -2,6 +2,7 @@ package com.baseandroid.baselibrary.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
@@ -67,4 +68,14 @@ abstract class BaseDiffAdapter<T : BaseModel>(
     // endregion
 }
 
+class BaseListAdapter<T : BaseModel>(
+    diffCallback: DiffUtil.ItemCallback<T>,
+    inflater: LayoutInflater,
+    @LayoutRes private val resLayout: Int
+
+) : BaseDiffAdapter<T>(diffCallback, inflater) {
+    override fun getItemViewType(position: Int): Int {
+        return resLayout
+    }
+}
 

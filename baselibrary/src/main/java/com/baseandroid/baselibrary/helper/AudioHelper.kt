@@ -109,6 +109,8 @@ class AudioHelper(context: Context, onAudioLoss: (Boolean) -> Unit) {
         override fun onCallStateChanged(state: Int, phoneNumber: String?) {
             if (state != TelephonyManager.CALL_STATE_IDLE) {
                 onAudioLoss.invoke(true)
+            } else {
+                onAudioLoss.invoke(false)
             }
             super.onCallStateChanged(state, phoneNumber)
         }

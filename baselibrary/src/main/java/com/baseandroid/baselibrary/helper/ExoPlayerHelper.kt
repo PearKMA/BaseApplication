@@ -37,6 +37,7 @@ import com.google.android.exoplayer2.util.Util
 class ExoPlayerHelper(
     private val playerView: PlayerView,
     onError: (ExoPlaybackException) -> Unit,
+    delay: Long = 1000,
     private var callBack: IExoPlayerCallback?
 ) {
 
@@ -62,7 +63,7 @@ class ExoPlayerHelper(
                 val current = exoPlayer!!.currentPosition
                 callBack?.onCurrentTime(formatTime(current), current.toInt())
             }
-            handler.postDelayed(this, 1000)
+            handler.postDelayed(this, delay)
         }
     }
 

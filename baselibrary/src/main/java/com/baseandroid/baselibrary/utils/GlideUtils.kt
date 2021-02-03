@@ -48,15 +48,38 @@ fun ImageView.loadRoundedCorner(
 }
 
 fun View.loadBackground(source: Any) {
-    Glide.with(this)
-        .asDrawable()
-        .load(source)
-        .into(object : CustomTarget<Drawable>() {
-            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-                this@loadBackground.background = resource
-            }
+    this.post {
+        if (this.width > 0 && this.height > 0) {
+            Glide.with(this)
+                .asDrawable()
+                .load(source)
+                .override(this.width, this.height)
+                .into(object : CustomTarget<Drawable>() {
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        transition: Transition<in Drawable>?
+                    ) {
+                        this@loadBackground.background = resource
+                    }
 
-            override fun onLoadCleared(placeholder: Drawable?) {
-            }
-        })
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
+        } else {
+            Glide.with(this)
+                .asDrawable()
+                .load(source)
+                .into(object : CustomTarget<Drawable>() {
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        transition: Transition<in Drawable>?
+                    ) {
+                        this@loadBackground.background = resource
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+                })
+        }
+    }
 }
