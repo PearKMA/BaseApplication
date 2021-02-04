@@ -168,7 +168,8 @@ class ExampleViewModel: BaseViewModel() // or BaseActivityViewModel
 ```
 if using Hilt:
 ```
-class AViewModel @ViewModelInject constructor(
+@HiltViewModel
+class AViewModel @Inject constructor(
     private val ARepository: ARepository,
     @Assisted private val savedStateHandle: SavedStateHandle
 )
@@ -240,7 +241,7 @@ abstract class AppDatabase : RoomDatabase() {
 #### 4. di- AppModule
 ```
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object AppModule {
     @Singleton // Tell Dagger-Hilt to create a singleton accessible everywhere in ApplicationComponent (i.e. everywhere in the application)
     @Provides
