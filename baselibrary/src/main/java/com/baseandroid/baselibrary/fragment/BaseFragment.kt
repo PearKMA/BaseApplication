@@ -51,14 +51,10 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStatusBarColor(getStatusBarColor(), isDarkTheme())
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         initBackPress()
         initViews()
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
