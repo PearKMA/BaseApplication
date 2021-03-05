@@ -21,8 +21,8 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
 
     abstract fun getLayoutId(): Int
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initViews()
     }
 

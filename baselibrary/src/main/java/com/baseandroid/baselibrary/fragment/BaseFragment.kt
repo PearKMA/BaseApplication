@@ -130,8 +130,8 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // endregion
 
     // region safe navigation
-    protected fun onNavigateUp(viewId: Int){
-        if (findNavController().currentDestination?.id == viewId){
+    protected fun onNavigateUp(viewId: Int) {
+        if (findNavController().currentDestination?.id == viewId) {
             findNavController().navigateUp()
         }
     }
