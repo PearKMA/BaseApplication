@@ -52,7 +52,9 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setStatusBarColor(getStatusBarColor(), isDarkTheme())
 
-        initBackPress()
+        if (!preventBackPress()) {
+            initBackPress()
+        }
         initViews()
     }
 
@@ -119,6 +121,8 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     open fun initPause() {
 
     }
+
+    open fun preventBackPress(): Boolean = false
     // endregion
 
     // region abstract function
