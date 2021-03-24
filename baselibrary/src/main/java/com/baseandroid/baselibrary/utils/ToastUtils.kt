@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.widget.Toast
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 object ToastUtils {
     private var toast: Toast? = null
@@ -14,7 +15,7 @@ object ToastUtils {
     @Suppress("DEPRECATION")
     @SuppressLint("ShowToast")
     fun showToast(context: Context, message: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (isBuildLargerThan(Build.VERSION_CODES.R)) {
             toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
         } else {
             when {

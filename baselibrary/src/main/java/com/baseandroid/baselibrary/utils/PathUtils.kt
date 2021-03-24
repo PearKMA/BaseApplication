@@ -7,11 +7,12 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 import java.io.File
 
 @Suppress("DEPRECATION")
 fun getRootPath(context: Context): String {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    return if (isBuildLargerThan(Build.VERSION_CODES.Q)) {
         context.getExternalFilesDir(null)!!.absolutePath
     } else {
         Environment.getExternalStorageDirectory().absolutePath
@@ -55,7 +56,7 @@ fun getPathFromUri(context: Context, uri: Uri?): String? {
 }
 
 fun getUriFromPath(context: Context, path: String): Uri? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) FileProvider.getUriForFile(
+    return if (isBuildLargerThan(Build.VERSION_CODES.N)) FileProvider.getUriForFile(
         context,
         context.packageName.toString() + ".provider",
         File(path)

@@ -1,19 +1,30 @@
 package com.baseandroid.baselibrary.fragment
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.baseandroid.baselibrary.utils.ToastUtils.killToast
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // region Const and Fields
     protected lateinit var binding: BD
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            onActivityReturned(result)
+        }
     // endregion
 
     // region override function
@@ -21,7 +32,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         super.onCreate(savedInstanceState)
         if (isFullScreen()) {
             @Suppress("DEPRECATION")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (isBuildLargerThan(Build.VERSION_CODES.R)) {
                 activity?.window?.insetsController?.hide(WindowInsets.Type.statusBars())
             } else {
                 activity?.window?.setFlags(
@@ -33,12 +44,12 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         if (isClearFullScreen()) {
             @Suppress("DEPRECATION")
             activity?.window?.apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (isBuildLargerThan(Build.VERSION_CODES.R)) {
                     insetsController?.show(WindowInsets.Type.statusBars())
                     setDecorFitsSystemWindows(false)
                 } else {
                     clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (isBuildLargerThan(Build.VERSION_CODES.M)) {
                         decorView.systemUiVisibility =
                             (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
                     }
@@ -100,6 +111,20 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                 decorView.systemUiVisibility = newUIVisibility
                 this.statusBarColor = statusBarColor
             }
+        } else if (isBuildLargerThan(Build.VERSION_CODES.R)) {
+            activity?.window?.apply {
+                if (darkTheme) {
+                    decorView.windowInsetsController?.setSystemBarsAppearance(
+                        0, APPEARANCE_LIGHT_STATUS_BARS
+                    )
+                } else {
+                    decorView.windowInsetsController?.setSystemBarsAppearance(
+                        APPEARANCE_LIGHT_STATUS_BARS,
+                        APPEARANCE_LIGHT_STATUS_BARS
+                    )
+                }
+                this.statusBarColor = statusBarColor
+            }
         }
     }
 
@@ -123,6 +148,8 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     }
 
     open fun preventBackPress(): Boolean = false
+
+    open fun onActivityReturned(result: ActivityResult) {}
     // endregion
 
     // region abstract function
@@ -133,7 +160,11 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     abstract fun getStatusBarColor(): Int
     // endregion
 
-    // region safe navigation
+    // region protected method
+    protected fun onStartActivityForResult(intent: Intent, option: ActivityOptionsCompat? = null) {
+        resultLauncher.launch(intent, option)
+    }
+
     protected fun onNavigateUp(viewId: Int) {
         if (findNavController().currentDestination?.id == viewId) {
             findNavController().navigateUp()
@@ -147,6 +178,12 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
             } else {
                 findNavController().navigate(deepLink, bundle)
             }
+        }
+    }
+
+    protected fun onNavigate(viewId: Int, action: NavDirections) {
+        if (findNavController().currentDestination?.id == viewId) {
+            findNavController().navigate(action)
         }
     }
     // endregion

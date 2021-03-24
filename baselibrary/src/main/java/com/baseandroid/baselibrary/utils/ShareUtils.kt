@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.StrictMode
 import androidx.core.content.FileProvider
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 import java.io.File
 
 /**
@@ -21,7 +22,7 @@ fun shareItem(context: Context?, file: File): Boolean {
         val intentShareFile = Intent(Intent.ACTION_SEND)
         intentShareFile.type = getTypeFromFile(file.absolutePath) ?: "*/*"
         val fileUri =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) FileProvider.getUriForFile(
+            if (isBuildLargerThan(Build.VERSION_CODES.N)) FileProvider.getUriForFile(
                 context,
                 context.packageName + ".provider",
                 file
@@ -39,8 +40,7 @@ fun shareItem(context: Context?, file: File): Boolean {
 /**
  * Chia sẻ nhiều file
  * @param context   context
- * @param files     danh sách file cần chia sẻ
- * @param type      loại file
+ * @param listUri   danh sách file cần chia sẻ
  */
 fun shareMultiples(
     context: Context,

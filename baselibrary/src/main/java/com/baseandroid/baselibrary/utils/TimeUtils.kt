@@ -1,6 +1,7 @@
 package com.baseandroid.baselibrary.utils
 
 import android.os.Build
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -44,7 +45,16 @@ fun formatTimePattern(
     locale: Locale = Locale.getDefault()
 ): String {
     val sdf = SimpleDateFormat(pattern, locale)
-    return sdf.format((timeInMillis ?: 0) * 1000L)
+    return sdf.format(timeInMillis ?: 0)
+}
+
+fun formatTimePattern(
+    date: Date,
+    pattern: String,
+    locale: Locale = Locale.getDefault()
+): String {
+    val sdf = SimpleDateFormat(pattern, locale)
+    return sdf.format(date)
 }
 
 
@@ -56,7 +66,7 @@ fun getCurrentTime(): String {
 }
 
 fun getCurrentDate(): String {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    return if (isBuildLargerThan(Build.VERSION_CODES.O)) {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy_HH/mm/ss")
         current.format(formatter).toString()

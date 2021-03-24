@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import androidx.core.content.ContextCompat
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 interface IRippleClick {
     fun setBackground(context: Context, view: View, bg: Drawable?) {
@@ -23,7 +24,7 @@ interface IRippleClick {
         }
 
         try {
-            view.background = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            view.background = if (isBuildLargerThan(Build.VERSION_CODES.M)) {
                 RippleDrawable(
                     ColorStateList.valueOf(context.getColor(android.R.color.darker_gray)),
                     background,

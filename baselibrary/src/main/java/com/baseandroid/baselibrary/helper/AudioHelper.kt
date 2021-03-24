@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 class AudioHelper(context: Context, onAudioLoss: (Boolean) -> Unit) {
     private lateinit var request: AudioFocusRequest
@@ -45,7 +46,7 @@ class AudioHelper(context: Context, onAudioLoss: (Boolean) -> Unit) {
     private fun requestAudioFocus(): Int {
         abandonMediaFocus()
         mTelephonyManager.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE)
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        return if (isBuildLargerThan(Build.VERSION_CODES.O)) {
             //
             request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
                 .setAudioAttributes(
@@ -75,7 +76,7 @@ class AudioHelper(context: Context, onAudioLoss: (Boolean) -> Unit) {
      * Ngừng bắt sự kiện âm thanh
      */
     private fun abandonMediaFocus() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ::request.isInitialized) {
+        if (isBuildLargerThan(Build.VERSION_CODES.O) && ::request.isInitialized) {
             mAudioManager.abandonAudioFocusRequest(request)
         } else {
             @Suppress("DEPRECATION")
