@@ -71,7 +71,7 @@ e.g:
 ```
 In your app build.gradle:
 ```
-	ext {
+ext {
         kotlin_version = '1.4.31'
 
         compileSdkVersion = 30
@@ -143,6 +143,21 @@ class App : Application(){
         ... your code
     }
  }
+```
+- For use navigation:
+```
+	<androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph" />
 ```
 ### 3. Fragment: (similar with Dialog)
 ```
