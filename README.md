@@ -67,6 +67,43 @@ e.g:
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$rootProject.hiltJetPackVersion"
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.github.PearKMA:BaseApplication:0.1.1'
+    ...
+```
+In your app build.gradle:
+```
+	ext {
+        kotlin_version = '1.4.31'
+
+        compileSdkVersion = 30
+        minSdkVersion = 23
+        targetSdkVersion = 30
+
+        //
+        appcompatVersion = '1.2.0'
+        baseVersion = '0.1.7'
+        constraintlayoutVersion = '2.0.4'
+        coreKtxVersion = '1.3.2'
+        coroutinesVersion = '1.4.2'
+        crashlyticsVersion = '2.4.1'
+        dataStoreVersion = "1.0.0-alpha08"
+        desugarVersion = '1.1.5'
+        dexterVersion = '6.2.1'
+        fragmentVersion = '1.3.1'
+        ggServicesVersion = '4.3.4'
+        glideVersion = '4.11.0'
+        gradleVersion = '4.1.3'
+        hiltJetPackVersion = '1.0.0-alpha03'
+        hiltVersion = '2.31.2-alpha'
+        legacyVersion = '1.0.0'
+        lifecycleVersion = '2.2.0'
+        lifecycleKtxVersion = '2.2.0'
+        materialVersion = '1.3.0'
+        navigationVersion = '2.3.4'
+        recyclerViewVersion = '1.1.0'
+        sdp_sspVersion = '1.0.6'
+        viewPagerVersion = '1.0.0'
+	...
+    }
 ```
 ## How to use:
 ### 1. Application:
