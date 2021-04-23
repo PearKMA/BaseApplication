@@ -13,6 +13,7 @@ abstract class BaseActivity <BD: ViewDataBinding> : AppCompatActivity() {
     // region override function
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initBeforeCreateViews()
         if (isSingleTask()){
             if (!isTaskRoot){
                 finish()
@@ -30,6 +31,10 @@ abstract class BaseActivity <BD: ViewDataBinding> : AppCompatActivity() {
     // endregion
 
     // region protected function
+    protected open fun initBeforeCreateViews() {
+
+    }
+
     protected open fun initViews() {
 
     }
