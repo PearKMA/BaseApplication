@@ -12,6 +12,7 @@ buildscript {
         appcompatVersion = '1.2.0'
         materialVersion = '1.2.1'
         constraintlayoutVersion = '2.0.4'
+        dexterVersion = '6.2.1'
         navigationVersion = '2.3.5'
         hiltVersion = '2.33-beta'
         sdp_sspVersion = '1.0.6'

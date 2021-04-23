@@ -67,6 +67,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutinesVersion"
     implementation "com.google.dagger:hilt-android:$rootProject.hiltVersion"
     implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    implementation "com.karumi:dexter:$rootProject.dexterVersion"
 
     implementation project(':baselibrary')
 }
