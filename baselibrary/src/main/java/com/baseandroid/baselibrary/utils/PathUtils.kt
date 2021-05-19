@@ -1,24 +1,58 @@
 package com.baseandroid.baselibrary.utils
 
+import android.app.Activity
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.storage.StorageManager
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 import java.io.File
 
 @Suppress("DEPRECATION")
 fun getRootPath(context: Context): String {
-    return if (isBuildLargerThan(Build.VERSION_CODES.Q)) {
-        context.getExternalFilesDir(null)!!.absolutePath
-    } else {
-        Environment.getExternalStorageDirectory().absolutePath
+    return when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+            getPrimaryStorageVolumeForAndroid11AndAbove(context)
+        }
+        Build.VERSION.SDK_INT == Build.VERSION_CODES.Q -> {
+            getPrimaryStorageVolumeAndroid10(context)
+        }
+        else -> {
+            Environment.getExternalStorageDirectory().absolutePath
+        }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
+fun getPrimaryStorageVolumeForAndroid11AndAbove(context: Context): String {
+    val myStorageManager =
+        context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
+    val mySV = myStorageManager.primaryStorageVolume
+    return mySV.directory?.path ?: ""
+}
+
+@RequiresApi(Build.VERSION_CODES.N)
+fun getPrimaryStorageVolumeAndroid10(context: Context): String {
+    var volumeRootPath = ""
+    val myStorageManager =
+        context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
+    val mySV = myStorageManager.primaryStorageVolume
+    val storageVolumeClazz: Class<*>?
+    try {
+        storageVolumeClazz = Class.forName("android.os.storage.StorageVolume")
+        val path = storageVolumeClazz.getMethod("getPath")
+        volumeRootPath = path.invoke(mySV) as String
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return volumeRootPath
+}
 
 fun getPathFolder(context: Context, nameFolder: String): String {
     val path = "${getRootPath(context)}${File.separator}${nameFolder}"
@@ -27,6 +61,21 @@ fun getPathFolder(context: Context, nameFolder: String): String {
     return path
 }
 
+fun getOutputMediaDirectory(activity: Activity, name: String): File {
+    val mediaDir = activity.externalMediaDirs.firstOrNull()?.let {
+        File(it, name).apply { mkdirs() }
+    }
+    return if (mediaDir != null && mediaDir.exists())
+        mediaDir else activity.filesDir
+}
+
+fun getOutputFileDirectory(activity: Activity, name: String): File {
+    return try {
+        ContextCompat.getExternalFilesDirs(activity, null)[0]
+    } catch (e: Exception) {
+        activity.filesDir
+    }
+}
 
 /**
  * Lấy đường dẫn file từ uri

@@ -18,6 +18,11 @@ import androidx.navigation.fragment.findNavController
 import com.baseandroid.baselibrary.utils.ToastUtils.killToast
 import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
+
+enum class TypeScreen {
+    FULL_SCREEN, NON_FULL_SCREEN, NORMAL
+}
+
 abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // region Const and Fields
     protected lateinit var binding: BD
@@ -30,33 +35,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // region override function
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (isFullScreen()) {
-            @Suppress("DEPRECATION")
-            if (isBuildLargerThan(Build.VERSION_CODES.R)) {
-                activity?.window?.insetsController?.hide(WindowInsets.Type.statusBars())
-            } else {
-                activity?.window?.setFlags(
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN
-                )
-            }
-        }
-        if (isClearFullScreen()) {
-            @Suppress("DEPRECATION")
-            activity?.window?.apply {
-                if (isBuildLargerThan(Build.VERSION_CODES.R)) {
-                    insetsController?.show(WindowInsets.Type.statusBars())
-                    setDecorFitsSystemWindows(false)
-                } else {
-                    clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                    if (isBuildLargerThan(Build.VERSION_CODES.M)) {
-                        decorView.systemUiVisibility =
-                            (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
-                    }
-                }
-                statusBarColor = Color.TRANSPARENT
-            }
-        }
+        setScreenType()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -139,9 +118,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
 
     }
 
-    open fun isFullScreen(): Boolean = false
-
-    open fun isClearFullScreen(): Boolean = false
+    open fun onTypeScreen(): TypeScreen = TypeScreen.NORMAL
 
     open fun initPause() {
 
@@ -161,6 +138,46 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // endregion
 
     // region protected method
+    @Suppress("DEPRECATION")
+    protected fun setScreenType() {
+        when (onTypeScreen()) {
+            TypeScreen.FULL_SCREEN -> {
+                activity?.window?.apply {
+                    if (isBuildLargerThan(Build.VERSION_CODES.R)) {
+                        setDecorFitsSystemWindows(false)
+                        insetsController?.hide(WindowInsets.Type.statusBars())
+                        insetsController?.systemBarsBehavior =
+                            WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    } else {
+                        activity?.window?.setFlags(
+                            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                            WindowManager.LayoutParams.FLAG_FULLSCREEN
+                        )
+                    }
+                }
+            }
+            TypeScreen.NON_FULL_SCREEN -> {
+                activity?.window?.apply {
+                    if (isBuildLargerThan(Build.VERSION_CODES.R)) {
+                        setDecorFitsSystemWindows(true)
+                        insetsController?.show(WindowInsets.Type.statusBars())
+                        insetsController?.systemBarsBehavior =
+                            WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                    } else {
+                        clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                        if (isBuildLargerThan(Build.VERSION_CODES.M)) {
+                            decorView.systemUiVisibility =
+                                (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
+                        }
+                    }
+                    statusBarColor = Color.TRANSPARENT
+                }
+            }
+            TypeScreen.NORMAL -> {
+            }
+        }
+    }
+
     protected fun onStartActivityForResult(intent: Intent, option: ActivityOptionsCompat? = null) {
         resultLauncher.launch(intent, option)
     }
