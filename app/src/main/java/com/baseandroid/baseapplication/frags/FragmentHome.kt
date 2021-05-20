@@ -30,14 +30,14 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
 
     override fun initViews() {
         if (needReload) {
-            needReload = false
             setScreenType()
+            needReload = false
         }
         binding.listener = this
     }
 
     override fun onTypeScreen(): TypeScreen {
-        return TypeScreen.NON_FULL_SCREEN
+        return if (needReload) TypeScreen.TRANSLUCENT_STATUS_BAR else TypeScreen.NORMAL_SCREEN
     }
 
     override fun onNext() {
@@ -45,6 +45,9 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
         onNavigate(R.id.fragmentHome, R.id.action_fragmentHome_to_fragmentFullScreen)
     }
 
+    override fun handleBackPressed() {
+        activity?.finish()
+    }
     // endregion
 
     // region private method

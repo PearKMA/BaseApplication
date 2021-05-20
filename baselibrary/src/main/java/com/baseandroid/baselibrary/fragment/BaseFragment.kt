@@ -20,7 +20,7 @@ import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 
 enum class TypeScreen {
-    FULL_SCREEN, NON_FULL_SCREEN, NORMAL
+    FULL_SCREEN, NORMAL_SCREEN, TRANSLUCENT_STATUS_BAR, NONE
 }
 
 abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
@@ -118,7 +118,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
 
     }
 
-    open fun onTypeScreen(): TypeScreen = TypeScreen.NORMAL
+    open fun onTypeScreen(): TypeScreen = TypeScreen.NONE
 
     open fun initPause() {
 
@@ -138,6 +138,12 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // endregion
 
     // region protected method
+    /**
+     * @value TypeScreen#FULL_SCREEN: android 11 -> please set margin above navigation bar and below status bar
+     * @value TypeScreen#TypeScreen.NORMAL_SCREEN: There's no need to set margin
+     * @value TypeScreen#TRANSLUCENT_STATUS_BAR: similar FullScreen on Android 11
+     * @value TypeScreen#NONE: default, no change settings from last config
+     * */
     @Suppress("DEPRECATION")
     protected fun setScreenType() {
         when (onTypeScreen()) {
@@ -146,34 +152,49 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                     if (isBuildLargerThan(Build.VERSION_CODES.R)) {
                         setDecorFitsSystemWindows(false)
                         insetsController?.hide(WindowInsets.Type.statusBars())
+                        insetsController?.show(WindowInsets.Type.navigationBars())
                         insetsController?.systemBarsBehavior =
                             WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                     } else {
-                        activity?.window?.setFlags(
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                            WindowManager.LayoutParams.FLAG_FULLSCREEN
-                        )
+                        decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+                                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                or View.SYSTEM_UI_FLAG_FULLSCREEN)
                     }
                 }
             }
-            TypeScreen.NON_FULL_SCREEN -> {
+            TypeScreen.NORMAL_SCREEN -> {
                 activity?.window?.apply {
                     if (isBuildLargerThan(Build.VERSION_CODES.R)) {
                         setDecorFitsSystemWindows(true)
                         insetsController?.show(WindowInsets.Type.statusBars())
+                        insetsController?.show(WindowInsets.Type.navigationBars())
                         insetsController?.systemBarsBehavior =
                             WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_TOUCH
                     } else {
-                        clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                        if (isBuildLargerThan(Build.VERSION_CODES.M)) {
+                        decorView.systemUiVisibility =
+                            decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN.inv()
+                    }
+                }
+            }
+            TypeScreen.TRANSLUCENT_STATUS_BAR -> {
+                if (isBuildLargerThan(Build.VERSION_CODES.M)) {
+                    activity?.window?.apply {
+                        if (isBuildLargerThan(Build.VERSION_CODES.R)) {
+                            setDecorFitsSystemWindows(false)
+                            insetsController?.show(WindowInsets.Type.statusBars())
+                            insetsController?.show(WindowInsets.Type.navigationBars())
+                            insetsController?.systemBarsBehavior =
+                                WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                        } else {
                             decorView.systemUiVisibility =
                                 (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
                         }
                     }
-                    statusBarColor = Color.TRANSPARENT
+
                 }
             }
-            TypeScreen.NORMAL -> {
+            TypeScreen.NONE -> {
             }
         }
     }
