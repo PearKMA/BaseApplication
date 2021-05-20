@@ -1,7 +1,6 @@
 package com.baseandroid.baselibrary.fragment
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -40,8 +39,6 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setStatusBarColor(getStatusBarColor(), isDarkTheme())
-
         if (!preventBackPress()) {
             initBackPress()
         }
@@ -73,40 +70,6 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                 }
             })
     }
-
-    @Suppress("DEPRECATION")
-    private fun setStatusBarColor(statusBarColor: Int = Color.BLACK, darkTheme: Boolean = true) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            activity?.window?.apply {
-                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                var newUIVisibility = decorView.systemUiVisibility
-                newUIVisibility = if (darkTheme) {
-                    newUIVisibility and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
-                } else {
-                    newUIVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                }
-
-                decorView.systemUiVisibility = newUIVisibility
-                this.statusBarColor = statusBarColor
-            }
-        } else if (isBuildLargerThan(Build.VERSION_CODES.R)) {
-            activity?.window?.apply {
-                if (darkTheme) {
-                    decorView.windowInsetsController?.setSystemBarsAppearance(
-                        0, APPEARANCE_LIGHT_STATUS_BARS
-                    )
-                } else {
-                    decorView.windowInsetsController?.setSystemBarsAppearance(
-                        APPEARANCE_LIGHT_STATUS_BARS,
-                        APPEARANCE_LIGHT_STATUS_BARS
-                    )
-                }
-                this.statusBarColor = statusBarColor
-            }
-        }
-    }
-
     // endregion
 
     // region open function
@@ -171,10 +134,26 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                         insetsController?.show(WindowInsets.Type.navigationBars())
                         insetsController?.systemBarsBehavior =
                             WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                        if (isDarkTheme()) {
+                            decorView.windowInsetsController?.setSystemBarsAppearance(
+                                0, APPEARANCE_LIGHT_STATUS_BARS
+                            )
+                        } else {
+                            decorView.windowInsetsController?.setSystemBarsAppearance(
+                                APPEARANCE_LIGHT_STATUS_BARS,
+                                APPEARANCE_LIGHT_STATUS_BARS
+                            )
+                        }
+                        this.statusBarColor = this@BaseFragment.getStatusBarColor()
                     } else {
-                        decorView.systemUiVisibility =
-                            decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN.inv()
+                        decorView.systemUiVisibility = if (isDarkTheme()) {
+                            (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN.inv()) and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
+                        } else {
+                            (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN.inv()) or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        }
+                        this.statusBarColor = this@BaseFragment.getStatusBarColor()
                     }
+
                 }
             }
             TypeScreen.TRANSLUCENT_STATUS_BAR -> {
@@ -186,9 +165,24 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                             insetsController?.show(WindowInsets.Type.navigationBars())
                             insetsController?.systemBarsBehavior =
                                 WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                            if (isDarkTheme()) {
+                                decorView.windowInsetsController?.setSystemBarsAppearance(
+                                    0, APPEARANCE_LIGHT_STATUS_BARS
+                                )
+                            } else {
+                                decorView.windowInsetsController?.setSystemBarsAppearance(
+                                    APPEARANCE_LIGHT_STATUS_BARS,
+                                    APPEARANCE_LIGHT_STATUS_BARS
+                                )
+                            }
+                            this.statusBarColor = this@BaseFragment.getStatusBarColor()
                         } else {
-                            decorView.systemUiVisibility =
+                            decorView.systemUiVisibility = if (isDarkTheme()) {
                                 (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
+                            } else {
+                                (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                            }
+                            this.statusBarColor = this@BaseFragment.getStatusBarColor()
                         }
                     }
 

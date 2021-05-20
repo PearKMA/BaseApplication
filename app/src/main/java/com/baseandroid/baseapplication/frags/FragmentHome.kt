@@ -21,7 +21,7 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
     }
 
     override fun isDarkTheme(): Boolean {
-        return false
+        return needReload
     }
 
     override fun getStatusBarColor(): Int {
