@@ -11,12 +11,15 @@ allprojects {
 	}
 }
 ```
+
 ### Step 2: Add the dependency:
 ```
 dependencies {
 	 implementation 'com.github.PearKMA:BaseApplication:Tag'
 }
 ```
+- Current version: 0.2.1
+
 ### Expand:
 #### 1. For use navigation & hilt: Add to your root build.gradle dependencies
 ```
@@ -39,7 +42,7 @@ buildFeatures {
 #### 4. In your app build.gradle dependencies, add yours:
 e.g:
 ```
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.legacy:legacy-support-v4:$rootProject.legacyVersion"
     kapt "androidx.room:room-compiler:$rootProject.roomVersion"
     kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
     kapt "com.google.dagger:hilt-android-compiler:$rootProject.hiltVersion"
@@ -65,43 +68,55 @@ e.g:
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutinesVersion"
     implementation "com.google.dagger:hilt-android:$rootProject.hiltVersion"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$rootProject.hiltJetPackVersion"
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    implementation 'com.github.PearKMA:BaseApplication:0.1.1'
+    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    implementation "com.github.PearKMA:BaseApplication:$rootProject.baseVersion"
     ...
+```
+- Testing:
+```
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$rootProject.testExtJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
+    androidTestImplementation "com.google.truth:truth:$rootProject.googleTruthVersion"
+    testImplementation "com.google.truth:truth:$rootProject.googleTruthVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
 ```
 In your app build.gradle:
 ```
 ext {
-        kotlin_version = '1.4.31'
+        kotlin_version = '1.5.0'
 
         compileSdkVersion = 30
         minSdkVersion = 23
         targetSdkVersion = 30
 
         //
-        appcompatVersion = '1.2.0'
-        baseVersion = '0.1.7'
+        appcompatVersion = '1.3.0'
+        baseVersion = '0.2.1'
         constraintlayoutVersion = '2.0.4'
-        coreKtxVersion = '1.3.2'
-        coroutinesVersion = '1.4.2'
-        crashlyticsVersion = '2.4.1'
-        dataStoreVersion = "1.0.0-alpha08"
+        coreKtxVersion = '1.5.0'
+        coreTestingVersion = '2.1.0'
+        coroutinesVersion = '1.5.0'
         desugarVersion = '1.1.5'
-        dexterVersion = '6.2.1'
-        fragmentVersion = '1.3.1'
-        ggServicesVersion = '4.3.4'
-        glideVersion = '4.11.0'
-        gradleVersion = '4.1.3'
-        hiltJetPackVersion = '1.0.0-alpha03'
-        hiltVersion = '2.31.2-alpha'
+        dexterVersion = '6.2.2'
+        espressoVersion = '3.3.0'
+        fragmentVersion = '1.3.4'
+        glideVersion = '4.12.0'
+        gradleVersion = '4.2.1'
+        googleTruthVersion = '1.1.2'
+        hiltJetPackVersion = '1.0.0'
+        hiltVersion = '2.35'
+        junitVersion = '4.13.2'
         legacyVersion = '1.0.0'
         lifecycleVersion = '2.2.0'
-        lifecycleKtxVersion = '2.2.0'
+        lifecycleKtxVersion = '2.3.1'
         materialVersion = '1.3.0'
-        navigationVersion = '2.3.4'
-        recyclerViewVersion = '1.1.0'
+        navigationVersion = '2.3.5'
+        recyclerViewVersion = '1.2.0'
+        roomVersion = '2.3.0'
         sdp_sspVersion = '1.0.6'
-        viewPagerVersion = '1.0.0'
+        testExtJunitVersion ='1.1.2'
+        timberVersion = '4.7.1'
 	...
     }
 ```
@@ -112,14 +127,11 @@ ext {
 class App : Application(){
     companion object {
         var instance: App? = null
-        lateinit var prefHelper: PreferenceHelper
-            private set
     }
 
     override fun onCreate() {
         super.onCreate()
         instance = this
-        prefHelper = PreferenceHelper()
     }
 }
 ```
@@ -155,7 +167,6 @@ class App : Application(){
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 ```
@@ -175,6 +186,10 @@ class App : Application(){
         return false    // true: change color of status bar text to white, false: change color to black
     }
 
+    override fun onTypeScreen(): TypeScreen {
+        return TypeScreen.NONE | TypeScreen.FULL_SCREEN | TypeScreen.NORMAL_SCREEN | TypeScreen.TRANSLUCENT_STATUS_BAR
+    }
+
     override fun handleBackPressed() {
         
     }
@@ -182,6 +197,13 @@ class App : Application(){
     override fun initViews() {
         ... your code
     }
+
+    override fun onActivityReturned(result: ActivityResult) {
+
+    }
+
+    // onStartActivityForResult(intent: Intent, option: ActivityOptionsCompat? = null)
+    // onNavigate()/ onNavigateUp()
 ```
 ### 4. RecyclerView Adapter
 - Support max 1 data variable (item) & 1 listener (listener)
@@ -223,7 +245,7 @@ if using Hilt:
 @HiltViewModel
 class AViewModel @Inject constructor(
     private val ARepository: ARepository,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 )
 ```
 Register files change:
