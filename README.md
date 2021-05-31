@@ -18,7 +18,7 @@ dependencies {
 	 implementation 'com.github.PearKMA:BaseApplication:Tag'
 }
 ```
-- Current version: 0.2.1
+- Current version: [![](https://jitpack.io/v/PearKMA/BaseApplication.svg)](https://jitpack.io/#PearKMA/BaseApplication)
 
 ### Expand:
 #### 1. For use navigation & hilt: Add to your root build.gradle dependencies
