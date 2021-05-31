@@ -32,13 +32,9 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // endregion
 
     // region override function
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setScreenType()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setScreenType()
         if (!preventBackPress()) {
             initBackPress()
         }
@@ -124,6 +120,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
                     }
+                    this.statusBarColor = this@BaseFragment.getStatusBarColor()
                 }
             }
             TypeScreen.NORMAL_SCREEN -> {
@@ -147,9 +144,9 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                         this.statusBarColor = this@BaseFragment.getStatusBarColor()
                     } else {
                         decorView.systemUiVisibility = if (isDarkTheme()) {
-                            (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN.inv()) and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
+                            (View.SYSTEM_UI_FLAG_LAYOUT_STABLE and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN.inv()) and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
                         } else {
-                            (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN.inv()) or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                            (View.SYSTEM_UI_FLAG_LAYOUT_STABLE and View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN.inv()) or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                         }
                         this.statusBarColor = this@BaseFragment.getStatusBarColor()
                     }
