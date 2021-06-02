@@ -2,7 +2,9 @@ package com.baseandroid.baselibrary.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -82,4 +84,21 @@ fun checkFullPermission(
         })
         .onSameThread()
         .check()
+}
+
+
+fun Context.checkPermissionsGranted(list: List<String>): Boolean {
+    var result = true
+    list.forEach { permission ->
+        if (permission == Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+            if (!isBuildLargerThan(Build.VERSION_CODES.Q) && this.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                result = false
+            }
+        } else {
+            if (this.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                result = false
+            }
+        }
+    }
+    return result
 }

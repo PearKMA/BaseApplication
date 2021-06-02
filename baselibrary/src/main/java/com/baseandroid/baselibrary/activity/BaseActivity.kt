@@ -14,13 +14,13 @@ abstract class BaseActivity <BD: ViewDataBinding> : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initBeforeCreateViews()
+        binding = DataBindingUtil.setContentView(this, getLayoutId())
         if (isSingleTask()){
             if (!isTaskRoot){
                 finish()
                 return
             }
         }
-        binding = DataBindingUtil.setContentView(this,getLayoutId())
         initViews()
         initEvents()
     }

@@ -11,10 +11,12 @@ import android.view.Window
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
+import com.baseandroid.baselibrary.R
 
 abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
     // region Const and Fields
     protected lateinit var binding: BD
+    private var restore = false
     // endregion
 
     // region override function
@@ -45,6 +47,25 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = cancelable()
         initViews()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        restore = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (restore) {
+            restore = false
+            dialog?.window?.setWindowAnimations(
+                R.style.DialogAnimation_Restore
+            )
+        } else {
+            dialog?.window?.setWindowAnimations(
+                R.style.DialogAnimation
+            )
+        }
     }
     // endregion
 
