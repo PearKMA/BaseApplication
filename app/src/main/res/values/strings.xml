@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BaseApplication</string>
+    <string name="text_title">Permission denied</string>
+    <string name="text_content">We need this permission.</string>
 </resources>

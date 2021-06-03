@@ -1,10 +1,12 @@
 package com.baseandroid.baseapplication.frags
 
+import android.Manifest
 import android.graphics.Color
 import com.baseandroid.baseapplication.R
 import com.baseandroid.baseapplication.databinding.FragmentHomeBinding
 import com.baseandroid.baselibrary.fragment.BaseFragment
 import com.baseandroid.baselibrary.fragment.TypeScreen
+import com.baseandroid.baselibrary.utils.checkPermissions
 
 interface HomeListener {
     fun onNext()
@@ -30,7 +32,6 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
 
     override fun initViews() {
         if (needReload) {
-            setScreenType()
             needReload = false
         }
         binding.listener = this
@@ -42,7 +43,13 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
 
     override fun onNext() {
         needReload = true
-        onNavigate(R.id.fragmentHome, R.id.action_fragmentHome_to_fragmentFullScreen)
+        checkPermissions(
+            listPermissions,
+            R.string.text_title,
+            R.string.text_content
+        ) {
+            onNavigate(R.id.fragmentHome, R.id.action_fragmentHome_to_fragmentFullScreen)
+        }
     }
 
     override fun handleBackPressed() {
@@ -51,6 +58,10 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
     // endregion
 
     // region private method
-
+    private val listPermissions =
+        mutableListOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
     // endregion
 }

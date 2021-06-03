@@ -9,12 +9,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import com.baseandroid.baselibrary.fragment.BaseFragment
 import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 
 object PermissionUtils {
     fun showDialogPermission(context: Activity, title_id: Int, contentId: Int) {
@@ -45,7 +42,49 @@ object PermissionUtils {
     }
 }
 
-fun checkFullPermission(
+fun Context.checkPermissionsGranted(list: List<String>): Boolean {
+    list.forEach { permission ->
+        if (permission == Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+            if (!isBuildLargerThan(Build.VERSION_CODES.Q) && ContextCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return false
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+fun BaseFragment<*>.checkPermissions(
+    permissions: List<String>,
+    title_id: Int,
+    contentId: Int,
+    onGrant: () -> Unit = {}
+) {
+    this.doRequestPermission(permissions, {
+        onGrant()
+    }, { continueRequest ->
+        if (!continueRequest) {
+            PermissionUtils.showDialogPermission(
+                requireActivity(),
+                title_id,
+                contentId
+            )
+        }
+    })
+}
+
+/*fun checkFullPermission(
     activity: Activity,
     permissions: List<String>,
     title_id: Int,
@@ -84,21 +123,4 @@ fun checkFullPermission(
         })
         .onSameThread()
         .check()
-}
-
-
-fun Context.checkPermissionsGranted(list: List<String>): Boolean {
-    var result = true
-    list.forEach { permission ->
-        if (permission == Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-            if (!isBuildLargerThan(Build.VERSION_CODES.Q) && this.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                result = false
-            }
-        } else {
-            if (this.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                result = false
-            }
-        }
-    }
-    return result
-}
+}*/
