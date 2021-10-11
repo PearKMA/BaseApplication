@@ -15,7 +15,7 @@ import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 object PermissionUtils {
     fun showDialogPermission(context: Activity, title_id: Int, contentId: Int) {
-        var dialogPermission: AlertDialog? = null
+        val dialogPermission: AlertDialog?
 
         val builder = AlertDialog.Builder(context)
         builder.setTitle(context.getString(title_id))
@@ -30,15 +30,17 @@ object PermissionUtils {
             context.startActivity(intent)
         }
 
-        builder.setNegativeButton(
+        /*builder.setNegativeButton(
             "Exit"
         ) { _, _ ->
-            dialogPermission!!.dismiss()
-        }
+            dialogPermission?.dismiss()
+        }*/
 
         dialogPermission = builder.create()
 
-        dialogPermission.show()
+        if (!context.isFinishing) {
+            dialogPermission.show()
+        }
     }
 }
 
@@ -69,58 +71,26 @@ fun BaseFragment<*>.checkPermissions(
     permissions: List<String>,
     title_id: Int,
     contentId: Int,
-    onGrant: () -> Unit = {}
+    onGrant: () -> Unit = {},
+    onShowDialog: (() -> Unit)? = null,
 ) {
     this.doRequestPermission(permissions, {
         onGrant()
     }, { continueRequest ->
-        if (!continueRequest) {
-            PermissionUtils.showDialogPermission(
-                requireActivity(),
-                title_id,
-                contentId
-            )
+        if (!requireActivity().isFinishing) {
+            try {
+                if (onShowDialog == null) {
+                    PermissionUtils.showDialogPermission(
+                        requireActivity(),
+                        title_id,
+                        contentId
+                    )
+                } else {
+                    onShowDialog.invoke()
+                }
+            } catch (e: Exception) {
+
+            }
         }
     })
 }
-
-/*fun checkFullPermission(
-    activity: Activity,
-    permissions: List<String>,
-    title_id: Int,
-    contentId: Int,
-    onGrant: () -> Unit = {}
-) {
-    Dexter.withContext(activity)
-        .withPermissions(permissions)
-        .withListener(object : MultiplePermissionsListener {
-            override fun onPermissionsChecked(p0: MultiplePermissionsReport?) {
-                if (!activity.isFinishing) {
-                    if (p0?.areAllPermissionsGranted() == true) {
-                        onGrant()
-                    } else if (p0?.deniedPermissionResponses?.isEmpty() == false || p0?.isAnyPermissionPermanentlyDenied == true) {
-                        if (isBuildLargerThan(Build.VERSION_CODES.Q)) {
-                            if (p0.deniedPermissionResponses.size == 1 &&
-                                p0.deniedPermissionResponses[0].permissionName == Manifest.permission.WRITE_EXTERNAL_STORAGE
-                            ) {
-                                onGrant()
-                            } else {
-                                PermissionUtils.showDialogPermission(activity, title_id, contentId)
-                            }
-                        } else {
-                            PermissionUtils.showDialogPermission(activity, title_id, contentId)
-                        }
-                    }
-                }
-            }
-
-            override fun onPermissionRationaleShouldBeShown(
-                p0: MutableList<PermissionRequest>?,
-                p1: PermissionToken?
-            ) {
-                p1?.continuePermissionRequest()
-            }
-        })
-        .onSameThread()
-        .check()
-}*/

@@ -50,8 +50,8 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
     }
 
     override fun onStop() {
-        super.onStop()
         restore = true
+        super.onStop()
     }
 
     override fun onStart() {

@@ -3,6 +3,11 @@ package com.baseandroid.baselibrary.utils.extension
 import android.os.SystemClock
 import android.view.View
 import com.baseandroid.baselibrary.widgets.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.*
 
 private const val DEFAULT_DEBOUNCE_INTERVAL = 500L
 
@@ -79,3 +84,43 @@ fun View.onDebounceClick(
     }
 }
 
+
+@ExperimentalCoroutinesApi
+fun View.onClicked() = callbackFlow {
+    setOnClickListener { offer(Unit) }
+    awaitClose { setOnClickListener(null) }
+}
+
+@FlowPreview
+fun View.debounceClick(
+    maxTime: Long = DEFAULT_DEBOUNCE_INTERVAL,
+    onClick: (view: View?) -> Unit
+) {
+    this.onClicked()
+        .debounce(500) // 500ms debounce time
+        .onEach {
+            onClick(this)
+        }
+        .launchIn(GlobalScope)
+
+    this.onClicked()
+        .throttleFirst(maxTime)
+        .onEach {
+            onClick(this)
+        }
+        .launchIn(GlobalScope)
+}
+
+@FlowPreview
+@ExperimentalCoroutinesApi
+fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> = flow {
+    var lastEmissionTime = 0L
+    collect { upstream ->
+        val currentTime = System.currentTimeMillis()
+        val mayEmit = currentTime - lastEmissionTime > windowDuration
+        if (mayEmit) {
+            lastEmissionTime = currentTime
+            emit(upstream)
+        }
+    }
+}

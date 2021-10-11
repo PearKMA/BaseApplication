@@ -1,5 +1,7 @@
 package com.baseandroid.baselibrary.utils
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
@@ -8,6 +10,17 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+
+
+fun isValidContextForGlide(context: Context?): Boolean {
+    if (context == null) return false
+    if (context is Activity) {
+        if (context.isDestroyed || context.isFinishing) {
+            return false
+        }
+    }
+    return true
+}
 
 fun ImageView.loadNormal(
     source: Any,

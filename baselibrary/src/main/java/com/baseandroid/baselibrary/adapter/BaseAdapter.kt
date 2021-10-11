@@ -7,11 +7,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import com.baseandroid.baselibrary.BR
-import com.baseandroid.baselibrary.model.BaseModel
 
-class BaseAdapter<T: BaseModel>(private val inflater: LayoutInflater,
-                                @LayoutRes private val resLayout: Int)
-    : RecyclerView.Adapter<BaseAdapter.ViewHolderBase>() {
+class BaseAdapter<T>(
+    private val inflater: LayoutInflater,
+    @LayoutRes private val resLayout: Int
+) : RecyclerView.Adapter<BaseAdapter.ViewHolderBase>() {
     // region Const and Fields
     var data: List<T>? = null
         set(value) {

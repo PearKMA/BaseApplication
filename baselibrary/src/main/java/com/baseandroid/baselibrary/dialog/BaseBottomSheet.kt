@@ -31,8 +31,8 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
     }
 
     override fun onStop() {
-        super.onStop()
         restore = true
+        super.onStop()
     }
 
     override fun onStart() {

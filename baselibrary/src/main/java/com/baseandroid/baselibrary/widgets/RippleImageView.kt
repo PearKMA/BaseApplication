@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 
-class RippleImageView :AppCompatImageView, IRippleClick {
+class RippleImageView : AppCompatImageView, IRippleClick {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
@@ -14,7 +14,7 @@ class RippleImageView :AppCompatImageView, IRippleClick {
     )
 
     override fun setOnClickListener(l: OnClickListener?) {
-        setBackground(context,this,background)
+        setBackground(context, this, background)
         super.setOnClickListener(l)
     }
 }

@@ -15,6 +15,13 @@ fun isFileNameValid(nameFile: String, extension: String): Boolean {
     return matcher.matches()
 }
 
+fun isMatchedRegex(string: String, regex: String): Boolean {
+    val pattern = Pattern.compile(regex)
+    val optimalString = optimalString(string)
+    val matcher = pattern.matcher(optimalString)
+    return matcher.matches()
+}
+
 
 /**
  * Tối ưu chuỗi: loại bỏ các khoảng trắng do tab hoặc new line..
@@ -30,4 +37,14 @@ fun optimalString(name: String): String {
         }
     }
     return optimalString.trim()
+}
+
+fun String.hexDecodeString(): String {
+    val output = StringBuilder()
+
+    for (i in this.indices step 2) {
+        val str = this.substring(i, i + 2)
+        output.append(str.toInt(16).toChar())
+    }
+    return output.toString()
 }

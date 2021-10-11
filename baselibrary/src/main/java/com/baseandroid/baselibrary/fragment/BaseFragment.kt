@@ -47,7 +47,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                     } else {
                         granted = false
                         if (permanentlyDenied) {
-                            permanentlyDenied = shouldShowRequestPermissionRationale(entry.key)
+                            permanentlyDenied = !shouldShowRequestPermissionRationale(entry.key)
                         }
                     }
                 }
@@ -79,9 +79,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setScreenType()
-        if (!preventBackPress()) { // block device's back button
-            initBackPress()
-        }
+        initBackPress()
         initViews()
     }
 
@@ -162,7 +160,9 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    handleBackPressed()
+                    if (!preventBackPress()) { // block device's back button
+                        handleBackPressed()
+                    }
                 }
             })
     }

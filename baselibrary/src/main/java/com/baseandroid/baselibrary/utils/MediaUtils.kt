@@ -1,6 +1,8 @@
 package com.baseandroid.baselibrary.utils
 
+import android.content.Context
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import java.net.URLConnection
 
 fun getTypeFromFile(path: String): String? {
@@ -13,7 +15,7 @@ fun getTypeFromFile(path: String): String? {
     }
 }
 
-fun isTypeNeedCheck(path: String, typeMedia: String): Boolean{
+fun isTypeNeedCheck(path: String, typeMedia: String): Boolean {
     //Nếu có lỗi là do có ký tự đặc biệt
     return try {
         val mimeType = getTypeFromFile(path)
@@ -26,15 +28,15 @@ fun isTypeNeedCheck(path: String, typeMedia: String): Boolean{
 fun isMediaNotCorrupt(path: String, keyCode: Int): Boolean {
     val retriever = MediaMetadataRetriever()
     return try {
-            retriever.setDataSource(path)
-            val hasAudioStr =
-                retriever.extractMetadata(keyCode) //MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO
-            hasAudioStr != null && hasAudioStr == "yes"
-        } catch (e: Exception) {
-            false
-        } finally {
-            retriever.release()
-        }
+        retriever.setDataSource(path)
+        val hasAudioStr =
+            retriever.extractMetadata(keyCode) //MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO
+        hasAudioStr != null && hasAudioStr == "yes"
+    } catch (e: Exception) {
+        false
+    } finally {
+        retriever.release()
+    }
 
 }
 
@@ -46,9 +48,8 @@ fun isMediaNotCorrupt(path: String, keyCode: Int): Boolean {
  */
 fun getDurationFile(path: String): Long {
     val retriever = MediaMetadataRetriever()
-    val timeInMillisecond: Long
     //use one of overloaded setDataSource() functions to set your data source
-    timeInMillisecond = try {
+    return try {
         retriever.setDataSource(path)
         val time =
             retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
@@ -58,5 +59,20 @@ fun getDurationFile(path: String): Long {
     } finally {
         retriever.release()
     }
-    return timeInMillisecond
+}
+
+fun Context.getHeightVideo(path: String): Int {
+    val retriever = MediaMetadataRetriever()
+
+    //use one of overloaded setDataSource() functions to set your data source
+    return try {
+        retriever.setDataSource(this, Uri.parse(path))
+        val time =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+        time?.toInt() ?: 0
+    } catch (e: Exception) {
+        0
+    } finally {
+        retriever.release()
+    }
 }

@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.baseandroid.baselibrary.BR
-import com.baseandroid.baselibrary.model.BaseModel
 
 /**
  * Usecase:
@@ -26,7 +25,7 @@ import com.baseandroid.baselibrary.model.BaseModel
  *
  * it?.let(adapter::submitList)
  */
-abstract class BaseDiffAdapter<T : BaseModel>(
+abstract class BaseDiffAdapter<T>(
     diffCallback: DiffUtil.ItemCallback<T>,
     private val inflater: LayoutInflater
 ) :
@@ -49,7 +48,7 @@ abstract class BaseDiffAdapter<T : BaseModel>(
     // endregion
 
     // region ViewHolder
-    class ViewHolderBase<T : BaseModel>(
+    class ViewHolderBase<T>(
         private val binding: ViewDataBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -68,7 +67,7 @@ abstract class BaseDiffAdapter<T : BaseModel>(
     // endregion
 }
 
-class BaseListAdapter<T : BaseModel>(
+class BaseListAdapter<T>(
     diffCallback: DiffUtil.ItemCallback<T>,
     inflater: LayoutInflater,
     @LayoutRes private val resLayout: Int

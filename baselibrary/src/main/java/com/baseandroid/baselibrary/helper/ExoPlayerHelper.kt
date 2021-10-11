@@ -5,15 +5,9 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import com.baseandroid.baselibrary.utils.formatTime
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 
 /**
  * How to use:
@@ -36,7 +30,7 @@ import com.google.android.exoplayer2.util.Util
  */
 class ExoPlayerHelper(
     private val playerView: PlayerView,
-    onError: (ExoPlaybackException) -> Unit,
+    onError: (PlaybackException) -> Unit,
     delay: Long = 1000,
     private var callBack: IExoPlayerCallback?
 ) {
@@ -67,15 +61,10 @@ class ExoPlayerHelper(
         }
     }
 
-    private val playerListener = object : Player.EventListener {
-        override fun onPlayerError(error: ExoPlaybackException) {
+    private val playerListener = object : Player.Listener {
+        override fun onPlayerError(error: PlaybackException) {
             super.onPlayerError(error)
             onError(error)
-        }
-
-        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            super.onPlayerStateChanged(playWhenReady, playbackState)
-
         }
     }
 
@@ -160,23 +149,25 @@ class ExoPlayerHelper(
     /**
      * Init media player
      */
-    fun initializePlayer(url: String, user: String) {
+    fun initializePlayer(url: String/*, user: String*/) {
         exoPlayer = SimpleExoPlayer.Builder(playerView.context).build()
         exoPlayer!!.repeatMode = Player.REPEAT_MODE_ALL
         exoPlayer!!.addListener(playerListener)
 
         playerView.player = exoPlayer
-        val userAgent = Util.getUserAgent(playerView.context, user)
-        mediaSource = ProgressiveMediaSource
+        //val userAgent = Util.getUserAgent(playerView.context, user)
+        /*mediaSource = ProgressiveMediaSource
             .Factory(
                 DefaultDataSourceFactory(playerView.context, userAgent),
                 DefaultExtractorsFactory()
             )
-            .createMediaSource(Uri.parse(url))
+            .createMediaSource(MediaItem.fromUri(Uri.parse(url)))*/
+        val mediaItem = MediaItem.fromUri(Uri.parse(url))
+        exoPlayer!!.setMediaItem(mediaItem)
         audioHelper?.requestAudio()
-        exoPlayer!!.prepare(mediaSource!!, true, false)
-        exoPlayer!!.seekTo(currentWindow, playbackPosition)
         exoPlayer!!.playWhenReady = true
+        exoPlayer!!.seekTo(currentWindow, playbackPosition)
+        exoPlayer!!.prepare()
     }
 
     /**
