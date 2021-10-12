@@ -21,7 +21,7 @@ import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 
 enum class TypeScreen {
-    FULL_SCREEN, NORMAL_SCREEN, TRANSLUCENT_STATUS_BAR, NO_LIMIT, NONE
+    FULL_SCREEN, NORMAL_SCREEN, TRANSLUCENT_STATUS_BAR, NO_LIMIT, NO_LIMIT_WITH_STATUS_BAR, NONE
 }
 
 abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
@@ -195,6 +195,32 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                                 // Hide the nav bar and status bar
                                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
+                    }
+                    this.statusBarColor = this@BaseFragment.getStatusBarColor()
+                }
+            }
+            TypeScreen.NO_LIMIT_WITH_STATUS_BAR -> {
+                activity?.window?.apply {
+                    if (isBuildLargerThan(Build.VERSION_CODES.R)) {
+                        setDecorFitsSystemWindows(false)
+                        insetsController?.hide(WindowInsets.Type.navigationBars())
+                        insetsController?.systemBarsBehavior =
+                            WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    } else {
+                        addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                        addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+                        val systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+                                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                // Hide the nav bar and status bar
+                                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                or View.SYSTEM_UI_FLAG_FULLSCREEN)
+                        decorView.systemUiVisibility = if (isDarkTheme()) {
+                            systemUiVisibility and (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR).inv()
+                        } else {
+                            systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        }
                     }
                     this.statusBarColor = this@BaseFragment.getStatusBarColor()
                 }
