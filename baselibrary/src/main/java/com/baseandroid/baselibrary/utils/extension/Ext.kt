@@ -1,7 +1,9 @@
 package com.baseandroid.baselibrary.utils.extension
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.IdRes
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -11,6 +13,10 @@ val <T> T.exhaustive: T
     get() = this
 
 fun isBuildLargerThan(versionCode: Int) = Build.VERSION.SDK_INT >= versionCode
+
+fun Int.asColor(context: Context) = ContextCompat.getColor(context, this)
+
+fun Int.asDrawable(context: Context) = ContextCompat.getDrawable(context, this)
 
 fun <T> Fragment.setNavigationResult(key: String, value: T) {
     findNavController().previousBackStackEntry?.savedStateHandle?.set(

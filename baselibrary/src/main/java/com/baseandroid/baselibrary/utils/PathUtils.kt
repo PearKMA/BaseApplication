@@ -77,6 +77,21 @@ fun getOutputFileDirectory(activity: Activity): File {
     }
 }
 
+fun String.getCachePath(context: Context): File? {
+    // Create a file to save the bitmap
+    val dirPath: String = context.cacheDir.toString() + ""
+    File(dirPath).apply {
+        if (!exists()) {
+            mkdir()
+        }
+    }
+    val path = "$dirPath/$this"
+    val imageUrl = File(path)
+    return if (imageUrl.length() > 0) {
+        imageUrl
+    } else null
+}
+
 /**
  * Lấy đường dẫn file từ uri
  *

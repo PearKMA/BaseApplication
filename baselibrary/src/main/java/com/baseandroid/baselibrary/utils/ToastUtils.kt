@@ -14,18 +14,18 @@ object ToastUtils {
      */
     @Suppress("DEPRECATION")
     @SuppressLint("ShowToast")
-    fun showToast(context: Context, message: String) {
+    fun Context.showToast(message: String) {
         if (isBuildLargerThan(Build.VERSION_CODES.R)) {
-            toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
+            toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
         } else {
             when {
                 toast == null -> {
                     // Create toast if found null, it would he the case of first call only
-                    toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
+                    toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
                 }
                 toast!!.view == null -> {
                     // Toast not showing, so create new one
-                    toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
+                    toast = Toast.makeText(this, message, Toast.LENGTH_SHORT)
                 }
                 else -> {
                     // Updating toast message is showing
@@ -39,18 +39,18 @@ object ToastUtils {
 
     @Suppress("DEPRECATION")
     @SuppressLint("ShowToast")
-    fun showLongToast(context: Context, message: String) {
+    fun Context.showLongToast(message: String) {
         if (isBuildLargerThan(Build.VERSION_CODES.R)) {
-            toast = Toast.makeText(context, message, Toast.LENGTH_LONG)
+            toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
         } else {
             when {
                 toast == null -> {
                     // Create toast if found null, it would he the case of first call only
-                    toast = Toast.makeText(context, message, Toast.LENGTH_LONG)
+                    toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
                 }
                 toast!!.view == null -> {
                     // Toast not showing, so create new one
-                    toast = Toast.makeText(context, message, Toast.LENGTH_LONG)
+                    toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
                 }
                 else -> {
                     // Updating toast message is showing

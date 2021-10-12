@@ -13,3 +13,5 @@ fun <T> AppCompatActivity.observer(liveData: LiveData<T>?, onDataChange: (T?) ->
     liveData?.observe(this, Observer(onDataChange))
 }
 
+
+

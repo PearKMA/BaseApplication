@@ -25,3 +25,9 @@ fun hasNotch(context: Context): Boolean {
 
     return statusBarHeight > barHeight
 }
+
+val Context.screenWidth: Int
+    get() = resources.displayMetrics.widthPixels
+
+val Context.screenHeight: Int
+    get() = resources.displayMetrics.heightPixels
