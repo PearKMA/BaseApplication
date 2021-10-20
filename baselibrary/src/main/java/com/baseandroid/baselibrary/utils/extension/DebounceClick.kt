@@ -2,6 +2,8 @@ package com.baseandroid.baselibrary.utils.extension
 
 import android.os.SystemClock
 import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.baseandroid.baselibrary.widgets.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -85,6 +87,7 @@ fun View.onDebounceClick(
 }
 
 
+// Thử nghiệm
 @ExperimentalCoroutinesApi
 fun View.onClicked() = callbackFlow {
     setOnClickListener { offer(Unit) }
@@ -92,17 +95,40 @@ fun View.onClicked() = callbackFlow {
 }
 
 @FlowPreview
+fun Fragment.debounceClick(
+    view: View,
+    maxTime: Long = DEFAULT_DEBOUNCE_INTERVAL,
+    onClick: (view: View?) -> Unit
+) {
+    // #1
+    view.onClicked()
+        .debounce(maxTime)
+        .onEach {
+            onClick(view)
+        }
+        .launchIn(viewLifecycleOwner.lifecycleScope)
+    // #2
+    view.onClicked()
+        .throttleFirst(maxTime)
+        .onEach {
+            onClick(view)
+        }
+        .launchIn(viewLifecycleOwner.lifecycleScope)
+}
+
+@FlowPreview
 fun View.debounceClick(
     maxTime: Long = DEFAULT_DEBOUNCE_INTERVAL,
     onClick: (view: View?) -> Unit
 ) {
+    // #1
     this.onClicked()
-        .debounce(500) // 500ms debounce time
+        .debounce(maxTime)
         .onEach {
             onClick(this)
         }
         .launchIn(GlobalScope)
-
+    // #2
     this.onClicked()
         .throttleFirst(maxTime)
         .onEach {

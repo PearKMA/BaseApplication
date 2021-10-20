@@ -3,15 +3,14 @@ package com.baseandroid.baselibrary.dialog
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
+import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import com.baseandroid.baselibrary.R
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
     // region Const and Fields
@@ -54,6 +53,7 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
         super.onStop()
     }
 
+    @Suppress("DEPRECATION")
     override fun onStart() {
         super.onStart()
         if (restore) {
@@ -65,6 +65,27 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
             dialog?.window?.setWindowAnimations(
                 R.style.DialogAnimation
             )
+        }
+
+        if (fullScreen()) {
+            dialog?.window?.apply {
+                setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                if (isBuildLargerThan(Build.VERSION_CODES.R)) {
+                    setDecorFitsSystemWindows(false)
+                    insetsController?.hide(WindowInsets.Type.statusBars())
+                    insetsController?.show(WindowInsets.Type.navigationBars())
+                    insetsController?.systemBarsBehavior =
+                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                } else {
+                    clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+                    addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                    decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
+                            or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            or View.SYSTEM_UI_FLAG_FULLSCREEN)
+                }
+                this.statusBarColor = Color.TRANSPARENT
+            }
         }
     }
     // endregion
@@ -80,6 +101,7 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
 
     protected open fun cancelable(): Boolean = true
 
+    protected open fun fullScreen() = false
 
     protected open fun initViews() {
 

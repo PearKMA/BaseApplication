@@ -2,14 +2,14 @@ package com.baseandroid.baselibrary.utils
 
 import android.content.Context
 import android.content.res.Resources
-import android.util.DisplayMetrics
-import kotlin.math.roundToInt
+import android.util.TypedValue
 
-fun Float.convertDpToPixel(): Int {
-    val metrics: DisplayMetrics = Resources.getSystem().displayMetrics
-    val px = this * (metrics.densityDpi / 160f)
-    return px.roundToInt()
-}
+val Number.toPixel
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics
+    )
 
 fun hasNotch(context: Context): Boolean {
     var statusBarHeight = 0
@@ -21,7 +21,7 @@ fun hasNotch(context: Context): Boolean {
     if (resourceId > 0) {
         statusBarHeight = context.resources.getDimensionPixelOffset(resourceId)
     }
-    val barHeight = 24f.convertDpToPixel()
+    val barHeight = 24f.toPixel.toInt()
 
     return statusBarHeight > barHeight
 }

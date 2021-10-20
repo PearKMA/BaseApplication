@@ -36,7 +36,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     private val requestPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             var granted = true
-            var permanentlyDenied = true
+            var continueRequest = true
             permissions.entries.forEach { entry ->
                 if (!entry.value) {
                     if (entry.key == Manifest.permission.WRITE_EXTERNAL_STORAGE && isBuildLargerThan(
@@ -46,8 +46,8 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                         // can ignore because from Android Q, WRITE_EXTERNAL_STORAGE permission always be false
                     } else {
                         granted = false
-                        if (permanentlyDenied) {
-                            permanentlyDenied = !shouldShowRequestPermissionRationale(entry.key)
+                        if (continueRequest) {
+                            continueRequest = shouldShowRequestPermissionRationale(entry.key)
                         }
                     }
                 }
@@ -55,7 +55,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
             if (granted) {
                 onAllow?.invoke()
             } else {
-                onDenied?.invoke(permanentlyDenied)
+                onDenied?.invoke(continueRequest)
             }
         }
 
@@ -73,6 +73,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
@@ -103,7 +104,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
 
     open fun handleBackPressed() {}
 
-    open fun onTypeScreen(): TypeScreen = TypeScreen.NONE
+    open fun typeScreen(): TypeScreen = TypeScreen.NONE
 
     open fun initPause() {}
 
@@ -153,11 +154,22 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
             findNavController().navigate(action)
         }
     }
+
+    protected fun navigateWithClearStack(destination: Int) {
+        val current = findNavController().currentDestination?.id
+        if (null != current) {
+            findNavController().popBackStack(current, true)
+            if (current != destination) {
+                findNavController().navigate(destination)
+            }
+        }
+    }
     // endregion
 
     // region private function
     private fun initBackPress() {
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (!preventBackPress()) { // block device's back button
@@ -176,7 +188,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
      * */
     @Suppress("DEPRECATION")
     protected fun setScreenType() {
-        when (onTypeScreen()) {
+        when (typeScreen()) {
             TypeScreen.NO_LIMIT -> {
                 activity?.window?.apply {
                     if (isBuildLargerThan(Build.VERSION_CODES.R)) {

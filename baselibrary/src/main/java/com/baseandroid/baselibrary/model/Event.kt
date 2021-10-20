@@ -2,16 +2,11 @@ package com.baseandroid.baselibrary.model
 
 import okhttp3.ResponseBody
 
-sealed class EventStatus {
-    data class Loading(var loading: Boolean, var progress: Int) : EventStatus()
-    data class Success(var message: String) : EventStatus()
-    data class Failure(var e: String) : EventStatus()
-
-    companion object {
-        fun loading(loading: Boolean, progress: Int): EventStatus = Loading(loading, progress)
-        fun success(message: String = ""): EventStatus = Success(message)
-        fun failure(error: String = ""): EventStatus = Failure(error)
-    }
+sealed class ActionEvent<out T> {
+    object Loading : ActionEvent<Nothing>()
+    data class Success<out T>(val value: T) : ActionEvent<T>()
+    data class Failure(val throwable: Throwable?) : ActionEvent<Nothing>()
+    object None : ActionEvent<Nothing>()
 }
 
 
