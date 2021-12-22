@@ -3,7 +3,9 @@ package com.baseandroid.baselibrary.utils.extension
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.transform
 
 fun <T> LifecycleOwner.observer(liveData: LiveData<T>?, onDataChange: (T?) -> Unit) {
     liveData?.observe(this, Observer(onDataChange))
@@ -28,6 +30,18 @@ inline fun <T> MutableStateFlow<T>.update(function: (T) -> T) {
 //        }
 //    }
 //}
+
+
+/**
+ * Returns a flow which performs the given [action] on each value of the original flow's [Event].
+ */
+fun <T> Flow<Event<T?>>.onEachEvent(action: suspend (T) -> Unit): Flow<T> = transform { value ->
+    value.getContentIfNotHandled()?.let {
+        action(it)
+        return@transform emit(it)
+    }
+}
+
 
 inline fun <T> LifecycleOwner.singleObserver(
     liveData: LiveData<Event<T>>?,

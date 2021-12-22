@@ -2,6 +2,7 @@ package com.baseandroid.baselibrary.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 
@@ -21,6 +22,7 @@ abstract class BaseActivity<BD : ViewDataBinding> : AppCompatActivity() {
                 return
             }
         }
+        if (!enableDarkMode()) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         initViews(savedInstanceState)
     }
     // endregion
@@ -41,5 +43,7 @@ abstract class BaseActivity<BD : ViewDataBinding> : AppCompatActivity() {
 
     // region open function
     open fun isSingleTask(): Boolean = false
+
+    open fun enableDarkMode(): Boolean = false
     // endregion
 }

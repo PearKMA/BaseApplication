@@ -168,15 +168,15 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
 
     // region private function
     private fun initBackPress() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (!preventBackPress()) { // block device's back button
+        if (!preventBackPress()) { // block device's back button
+            requireActivity().onBackPressedDispatcher.addCallback(
+                viewLifecycleOwner,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
                         handleBackPressed()
                     }
-                }
-            })
+                })
+        }
     }
 
     /**
@@ -263,7 +263,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                         insetsController?.show(WindowInsets.Type.statusBars())
                         insetsController?.show(WindowInsets.Type.navigationBars())
                         insetsController?.systemBarsBehavior =
-                            WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                            WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                         if (isDarkTheme()) {
                             decorView.windowInsetsController?.setSystemBarsAppearance(
                                 0, APPEARANCE_LIGHT_STATUS_BARS
@@ -296,7 +296,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                             insetsController?.show(WindowInsets.Type.statusBars())
                             insetsController?.show(WindowInsets.Type.navigationBars())
                             insetsController?.systemBarsBehavior =
-                                WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_TOUCH
+                                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                             if (isDarkTheme()) {
                                 decorView.windowInsetsController?.setSystemBarsAppearance(
                                     0, APPEARANCE_LIGHT_STATUS_BARS
