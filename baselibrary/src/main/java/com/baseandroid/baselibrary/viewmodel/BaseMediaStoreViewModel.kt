@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 abstract class BaseMediaStoreViewModel(application: Application) : AndroidViewModel(application) {
     private var contentObserver: ContentObserver? = null
 
-
     open fun fetchData() {
         viewModelScope.launch {
             actionFetchData()
@@ -28,9 +27,15 @@ abstract class BaseMediaStoreViewModel(application: Application) : AndroidViewMo
         }
     }
 
-    abstract fun actionFetchData()
+    abstract suspend fun actionFetchData()
 
     open fun getUriStore(): Uri = MediaStore.Files.getContentUri("external")
+
+    override fun onCleared() {
+        contentObserver?.let {
+            getApplication<Application>().contentResolver.unregisterContentObserver(it)
+        }
+    }
 }
 
 /**

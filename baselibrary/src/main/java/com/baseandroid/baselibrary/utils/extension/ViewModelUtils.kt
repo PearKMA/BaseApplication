@@ -1,11 +1,12 @@
 package com.baseandroid.baselibrary.utils.extension
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 
 fun <T> LifecycleOwner.observer(liveData: LiveData<T>?, onDataChange: (T?) -> Unit) {
     liveData?.observe(this, Observer(onDataChange))
@@ -22,14 +23,20 @@ inline fun <T> MutableStateFlow<T>.update(function: (T) -> T) {
 }
 
 // require lifecycle runtime
-//fun <T> LifecycleOwner.collectWhenStarted(flow: Flow<T>, firstTimeDelay: Long = 0L, action: suspend (value: T) -> Unit) {
-//    lifecycleScope.launch {
-//        delay(firstTimeDelay)
+fun <T> LifecycleOwner.collectWhenStarted(
+    flow: Flow<T>,
+    firstTimeDelay: Long = 0L,
+    action: suspend (value: T) -> Unit
+) {
+    lifecycleScope.launch {
+        delay(firstTimeDelay)
+        flow.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .collect(action)
 //        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
 //            flow.collect(action)
 //        }
-//    }
-//}
+    }
+}
 
 
 /**
@@ -47,7 +54,7 @@ inline fun <T> LifecycleOwner.singleObserver(
     liveData: LiveData<Event<T>>?,
     crossinline onDataChange: (T?) -> Unit
 ) {
-    liveData?.observe(this, { it?.getContentIfNotHandled()?.let(onDataChange) })
+    observer(liveData) { it?.getContentIfNotHandled()?.let(onDataChange) }
 }
 
 /**

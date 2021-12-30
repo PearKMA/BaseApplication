@@ -1,14 +1,59 @@
 package com.baseandroid.baselibrary.activity
 
+import android.Manifest
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import com.baseandroid.baselibrary.utils.checkPermissionsGranted
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 abstract class BaseActivity<BD : ViewDataBinding> : AppCompatActivity() {
     // region Const and Fields
     protected lateinit var binding: BD
+
+    // request permission
+    private var onAllow: (() -> Unit)? = null
+    private var onDenied: ((Boolean) -> Unit)? =
+        null // true: can continue request, false: open settings
+
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            var granted = true
+            var continueRequest = true
+            permissions.entries.forEach { entry ->
+                if (!entry.value) {
+                    if (entry.key == Manifest.permission.WRITE_EXTERNAL_STORAGE && isBuildLargerThan(
+                            Build.VERSION_CODES.Q
+                        )
+                    ) {
+                        // can ignore because from Android Q, WRITE_EXTERNAL_STORAGE permission always be false
+                    } else {
+                        granted = false
+                        if (continueRequest) {
+                            continueRequest = shouldShowRequestPermissionRationale(entry.key)
+                        }
+                    }
+                }
+            }
+            if (granted) {
+                onAllow?.invoke()
+            } else {
+                onDenied?.invoke(continueRequest)
+            }
+        }
+
+    // other request
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            onActivityReturned(result)
+        }
     // endregion
 
     // region override function
@@ -16,6 +61,7 @@ abstract class BaseActivity<BD : ViewDataBinding> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         initBeforeCreateViews(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, getLayoutId())
+        binding.lifecycleOwner = this
         if (isSingleTask()) {
             if (!isTaskRoot) {
                 finish()
@@ -39,11 +85,31 @@ abstract class BaseActivity<BD : ViewDataBinding> : AppCompatActivity() {
     protected open fun initViews(savedInstanceState: Bundle?) {
 
     }
+
+    protected fun onStartActivityForResult(intent: Intent, option: ActivityOptionsCompat? = null) {
+        resultLauncher.launch(intent, option)
+    }
     // endregion
 
     // region open function
     open fun isSingleTask(): Boolean = false
 
     open fun enableDarkMode(): Boolean = false
+
+    open fun onActivityReturned(result: ActivityResult) {}
+
+    open fun doRequestPermission(
+        permissions: List<String>,
+        onAllow: () -> Unit = {}, onDenied: (Boolean) -> Unit = {}
+    ) {
+        this.onAllow = onAllow
+        this.onDenied = onDenied
+
+        if (checkPermissionsGranted(permissions)) {
+            onAllow()
+        } else {
+            requestPermissionsLauncher.launch(permissions.toTypedArray())
+        }
+    }
     // endregion
 }
