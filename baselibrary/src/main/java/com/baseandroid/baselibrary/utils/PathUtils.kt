@@ -69,11 +69,11 @@ fun getOutputMediaDirectory(activity: Activity, name: String): File {
         mediaDir else activity.filesDir
 }
 
-fun getOutputFileDirectory(activity: Activity): File {
+fun getOutputFileDirectory(context: Context): File {
     return try {
-        ContextCompat.getExternalFilesDirs(activity, null)[0]
+        ContextCompat.getExternalFilesDirs(context, null)[0]
     } catch (e: Exception) {
-        activity.filesDir
+        context.filesDir
     }
 }
 
