@@ -7,7 +7,7 @@ import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Build
 import android.view.View
-import com.baseandroid.baselibrary.utils.extension.VERSION_CODE
+import com.baseandroid.baselibrary.utils.extension.buildVersion
 import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 import java.lang.reflect.InvocationTargetException
 
@@ -36,14 +36,14 @@ object NotchUtils {
     }
 
     private fun View?.hasNotchAtAndroidP(): Boolean {
-        if (isBuildLargerThan(VERSION_CODE.P)) {
+        if (isBuildLargerThan(buildVersion.P)) {
             return this?.rootWindowInsets?.displayCutout != null
         }
         return false
     }
 
     private fun Activity?.hasNotchAtAndroidP(): Boolean {
-        if (isBuildLargerThan(VERSION_CODE.P)) {
+        if (isBuildLargerThan(buildVersion.P)) {
             return this?.window?.decorView?.rootWindowInsets?.displayCutout != null
         }
         return false
@@ -123,7 +123,7 @@ object NotchUtils {
         this?.window?.decorView?.getWindowVisibleDisplayFrame(rect)
         val statusBarHeight = if (rect.top > 0) rect.top else 24f.toPixel.toInt()
 
-        if (isBuildLargerThan(VERSION_CODE.P)) {
+        if (isBuildLargerThan(buildVersion.P)) {
             val displayCutout = this?.window?.decorView?.rootWindowInsets?.displayCutout
             if (displayCutout != null) {
                 notchHeight =
