@@ -76,7 +76,7 @@ fun BaseFragment<*>.checkPermissions(
 ) {
     this.doRequestPermission(permissions, {
         onGrant()
-    }, { continueRequest ->
+    }, {
         if (!requireActivity().isFinishing) {
             try {
                 if (onShowDialog == null) {

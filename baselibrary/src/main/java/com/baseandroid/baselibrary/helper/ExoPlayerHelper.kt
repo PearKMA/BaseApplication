@@ -5,7 +5,10 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import com.baseandroid.baselibrary.utils.formatTime
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
 
@@ -43,7 +46,7 @@ class ExoPlayerHelper(
 
     private var audioHelper: AudioHelper? = null
     private var playbackPosition: Long = 0
-    private var currentWindow = 0
+    private var currentMediaItemIndex = 0
     private var playWhenReady = true
     private var isPlaying = true
     private var handler: Handler = Handler(Looper.getMainLooper())
@@ -150,7 +153,7 @@ class ExoPlayerHelper(
      * Init media player
      */
     fun initializePlayer(url: String/*, user: String*/) {
-        exoPlayer = SimpleExoPlayer.Builder(playerView.context).build()
+        exoPlayer = ExoPlayer.Builder(playerView.context).build()
         exoPlayer!!.repeatMode = Player.REPEAT_MODE_ALL
         exoPlayer!!.addListener(playerListener)
 
@@ -166,7 +169,7 @@ class ExoPlayerHelper(
         exoPlayer!!.setMediaItem(mediaItem)
         audioHelper?.requestAudio()
         exoPlayer!!.playWhenReady = true
-        exoPlayer!!.seekTo(currentWindow, playbackPosition)
+        exoPlayer!!.seekTo(currentMediaItemIndex, playbackPosition)
         exoPlayer!!.prepare()
     }
 
@@ -176,7 +179,7 @@ class ExoPlayerHelper(
     fun killPlayer() {
         if (exoPlayer != null) {
             playbackPosition = exoPlayer!!.currentPosition
-            currentWindow = exoPlayer!!.currentWindowIndex
+            currentMediaItemIndex = exoPlayer!!.currentMediaItemIndex
             playWhenReady = exoPlayer!!.playWhenReady
             exoPlayer!!.release()
             exoPlayer = null

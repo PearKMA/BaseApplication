@@ -42,7 +42,7 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
         binding.listener = this
     }
 
-    override fun onTypeScreen(): TypeScreen {
+    override fun typeScreen(): TypeScreen {
         return if (needReload) TypeScreen.TRANSLUCENT_STATUS_BAR else TypeScreen.NORMAL_SCREEN
     }
 

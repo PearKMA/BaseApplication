@@ -1,5 +1,6 @@
 package com.baseandroid.baseapplication
 
+import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import com.baseandroid.baseapplication.databinding.ActivityMainBinding
 import com.baseandroid.baselibrary.activity.BaseActivity
@@ -9,10 +10,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMainActivityListener 
         return R.layout.activity_main
     }
 
-    override fun initViews() {
+    override fun initViews(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         binding.listener = this
     }
+
 
     override fun onTestClick() {
         //binding.tvTest.text = getString(R.string.app_name)

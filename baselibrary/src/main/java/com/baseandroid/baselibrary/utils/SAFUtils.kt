@@ -148,7 +148,7 @@ object SAFUtils {
     private fun getDocumentPathFromTreeUri(treeUri: Uri): String {
         val docId = DocumentsContract.getTreeDocumentId(treeUri)
         val split = docId.split(":")
-        return if (split.size >= 2 && split[1] != null) {
+        return if (split.size >= 2) {
             split[1]
         } else {
             File.separator

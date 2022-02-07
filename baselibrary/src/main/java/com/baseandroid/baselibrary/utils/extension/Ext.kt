@@ -18,6 +18,9 @@ fun Int.asColor(context: Context) = ContextCompat.getColor(context, this)
 
 fun Int.asDrawable(context: Context) = ContextCompat.getDrawable(context, this)
 
+inline fun <reified T : Enum<T>> String.asEnumOrDefault(defaultValue: T? = null): T? =
+    enumValues<T>().find { it.name.equals(this, ignoreCase = true) } ?: defaultValue
+
 fun <T> Fragment.setNavigationResult(key: String, value: T) {
     findNavController().previousBackStackEntry?.savedStateHandle?.set(
         key,

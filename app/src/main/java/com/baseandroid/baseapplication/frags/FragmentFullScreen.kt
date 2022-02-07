@@ -32,7 +32,7 @@ class FragmentFullScreen : BaseFragment<FragmentFullScreenBinding>(), IFullScree
         binding.listener = this
     }
 
-    override fun onTypeScreen(): TypeScreen {
+    override fun typeScreen(): TypeScreen {
         return TypeScreen.FULL_SCREEN
     }
 

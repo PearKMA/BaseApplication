@@ -2,14 +2,7 @@ package com.baseandroid.baselibrary.utils.extension
 
 import android.os.SystemClock
 import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.baseandroid.baselibrary.widgets.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
 
 private const val DEFAULT_DEBOUNCE_INTERVAL = 500L
 
@@ -87,6 +80,7 @@ fun View.onDebounceClick(
 }
 
 
+/*
 // Thử nghiệm
 @ExperimentalCoroutinesApi
 fun View.onClicked() = callbackFlow {
@@ -149,4 +143,4 @@ fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> = flow {
             emit(upstream)
         }
     }
-}
+}*/

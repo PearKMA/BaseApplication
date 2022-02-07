@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.baseandroid.baselibrary.utils
 
 import android.app.Activity
@@ -35,6 +37,8 @@ fun Bitmap?.saveFile(
     }
 }
 
+@Suppress("DEPRECATION")
+@Deprecated("Deprecated. Use https://developer.android.com/guide/topics/renderscript/migrate")
 fun Bitmap.blurBitmap(context: Context, radius: Float): Bitmap {
     lateinit var rsContext: RenderScript
     try {
@@ -81,11 +85,6 @@ fun getScreenShotFromPixelCopy(view: View, activity: Activity, callback: (Bitmap
                 )
             } else {
                 // Create bitmap and draw via canvas
-                val bitmap =
-                    Bitmap.createBitmap(
-                        view.width, view.height,
-                        Bitmap.Config.ARGB_8888
-                    )
                 val canvas = Canvas(bitmap)
                 view.draw(canvas)
                 callback(bitmap)
