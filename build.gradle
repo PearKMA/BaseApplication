@@ -1,55 +1,35 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
-    ext {
-        kotlin_version = '1.6.10'
+//buildscript {
+//    dependencies {
+//        classpath "com.google.dagger:hilt-android-gradle-plugin:2.38.1"
+//    }
+//}
+plugins {
+    id 'com.android.application' version '7.1.1' apply false
+    id 'com.android.library' version '7.1.1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.6.10' apply false
+    id 'com.github.ben-manes.versions' version '0.42.0'
+    id 'androidx.navigation.safeargs.kotlin' version '2.5.0-alpha01' apply false
+//    id 'com.google.dagger.hilt.android' version '2.38.1' apply false
+//    id 'com.google.gms:google-services' version '4.3.10' apply false
+//    id 'com.google.firebase:firebase-crashlytics-gradle' version '2.8.1' apply false
 
-        compileSdkVersion = 32
-        minSdkVersion = 23
-        targetSdkVersion = 32
-
-        //
-        coreKtxVersion = '1.5.0'
-        appcompatVersion = '1.4.1'
-        materialVersion = '1.5.0'
-        constraintlayoutVersion = '2.1.3'
-        dexterVersion = '6.2.2'
-        navigationVersion = '2.4.0'
-        navigationPlugin = '2.5.0-alpha01'
-        hiltVersion = '2.38.1'
-        sdp_sspVersion = '1.0.6'
-        roomVersion = '2.4.1'
-        glideVersion = '4.12.0'
-        fragmentVersion = '1.4.1'
-        lifecycleVersion = '2.2.0'
-        lifecycleKtxVersion = '2.4.0'
-        recyclerViewVersion = '1.2.0'
-        viewPagerVersion = '1.0.0'
-        coroutinesVersion = '1.3.9'
-        gradleVersion = '7.1.1'
-    }
-
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "com.android.tools.build:gradle:$gradleVersion"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationPlugin"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
+    /**
+     * You should use `apply false` in the top-level build.gradle file
+     * to add a Gradle plugin as a build dependency, but not apply it to the
+     * current (root) project. You should not use `apply false` in sub-projects.
+     * For more information, see
+     * Applying external plugins with same version to subprojects.
+     */
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+dependencyUpdates {
+    gradleReleaseChannel = "current"
+    rejectVersionIf {
+        Deps.isNonStable(it.candidate.version)
+    }
 }

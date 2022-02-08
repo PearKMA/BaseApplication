@@ -6,16 +6,18 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
+//def localProperties = new Properties()
+//localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 android {
-    compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion "30.0.3"
+    compileSdkVersion Versions.compileSdk
 
     defaultConfig {
         applicationId "com.hunglv.baseapplication"
-        minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
+        minSdkVersion Versions.minSdk
+        targetSdk Versions.targetSdk
         versionCode 1
-        versionName "1.0"
+        versionName AppDetail.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -26,47 +28,64 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+//            shrinkResources true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            shrinkResources false
+            minifyEnabled false
+            // #1: resValue("string", "google_maps_key", localProperties['apiKey']) -> access: R.string.google_maps_key
+            // #2: buildConfigField("String", "API_KEY", "\"" + localProperties['apiKey'] + "\"") -> access: BuildConfig.API_KEY
         }
     }
     compileOptions {
+        // Flag to enable support for the new language APIs
+//        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = '1.8'
         // Enable Coroutines
-        freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+        freeCompilerArgs += Args.coroutines
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "ChargingAnimation_${variant.buildType.name}_${defaultConfig.versionName}.apk"
+        }
     }
 }
 
 dependencies {
-    kapt "androidx.room:room-compiler:$rootProject.roomVersion"
-    kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
-    kapt "com.google.dagger:hilt-android-compiler:$rootProject.hiltVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlin_version"
-    implementation "androidx.core:core-ktx:$rootProject.coreKtxVersion"
-    implementation "androidx.appcompat:appcompat:$rootProject.appcompatVersion"
-    implementation "com.google.android.material:material:$rootProject.materialVersion"
-    implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayoutVersion"
-    implementation "com.intuit.sdp:sdp-android:$rootProject.sdp_sspVersion"
-    implementation "com.intuit.ssp:ssp-android:$rootProject.sdp_sspVersion"
-    implementation "androidx.fragment:fragment-ktx:$rootProject.fragmentVersion"
-    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.lifecycleKtxVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleKtxVersion"
-    implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
-    implementation "androidx.recyclerview:recyclerview:$rootProject.recyclerViewVersion"
-    implementation "androidx.room:room-runtime:$rootProject.roomVersion"
-    implementation "androidx.room:room-ktx:$rootProject.roomVersion"
-    implementation "androidx.viewpager2:viewpager2:$rootProject.viewPagerVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutinesVersion"
-    implementation "com.google.dagger:hilt-android:$rootProject.hiltVersion"
-    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
-    implementation "com.karumi:dexter:$rootProject.dexterVersion"
+    kapt Deps.roomKapt
+    kapt Deps.glideKapt
+    kapt Deps.hiltKapt
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlin_version" add if Collections, Ranges, Math, Regex, File extensions, Locks, etc not found
+    implementation Deps.coreKtx
+    implementation Deps.appcompat
+    implementation Deps.material
+    implementation Deps.constraintlayout
+    implementation Deps.sdp
+    implementation Deps.ssp
+    implementation Deps.fragmentKtx
+    implementation Deps.livedata
+    implementation Deps.viewmodel
+    implementation Deps.navigationFragment
+    implementation Deps.navigationUi
+    implementation Deps.recyclerview
+    implementation Deps.roomRuntime
+    implementation Deps.roomKtx
+    implementation Deps.viewpager2
+    implementation Deps.coroutines
+    implementation Deps.coroutinesCore
+    implementation Deps.hilt
+    implementation Deps.glide
 
     implementation project(':baselibrary')
+}
+
+kapt {
+    correctErrorTypes true
 }
