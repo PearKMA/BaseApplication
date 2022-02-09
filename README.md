@@ -2,38 +2,56 @@
 Clean and quick implementation of the project (Maybe (╯°□°）╯︵ ┻━┻)
 
 ## Getting start:
-### Step 1. Add the JitPack repository to your root build.gradle at the end of repositories:
-```
-allprojects {
-	repositories {
-		...
-		maven { url 'https://jitpack.io' }
-	}
-}
-```
 
-### Step 2: Add the dependency:
-```
-dependencies {
-	 implementation 'com.github.PearKMA:BaseApplication:Tag'
-}
-```
-- Current version: [![](https://jitpack.io/v/PearKMA/BaseApplication.svg)](https://jitpack.io/#PearKMA/BaseApplication)
+### Download repository and import this as module
 
 ### Expand:
+
 #### 1. For use navigation & hilt: Add to your root build.gradle dependencies
+
 ```
 classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
 classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
 ```
+
+##### AGP 7+:
+
+- Add classpath plugins:
+
+```
+plugins {
+	id 'androidx.navigation.safeargs.kotlin' version '2.5.0-alpha01' apply false
+}
+```
+
+!!! if get error (eg. Plugin id contains invalid char ':') , add this to settings.gradle and remove
+plugin above
+
+```
+pluginManagement {
+	...
+	resolutionStrategy {
+        eachPlugin {
+            if( requested.id.id == 'dagger.hilt.android.plugin') {
+                useModule("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
+            }
+           ...
+        }
+    }
+}
+```
+
 #### 2. Add plugins to your app build.gradle
+
 ```
 id 'kotlin-kapt'
 id 'kotlin-android-extensions'
 id 'androidx.navigation.safeargs.kotlin'
 id 'dagger.hilt.android.plugin'
 ```
+
 #### 3. Enable data binding
+
 ```
 buildFeatures {
    dataBinding = true
@@ -41,7 +59,18 @@ buildFeatures {
 ```
 #### 4. In your app build.gradle dependencies, add yours:
 e.g:
+
 ```
+// Change default name apk
+android {
+	... 
+	applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "ChargingAnimation_${variant.buildType.name}_${defaultConfig.versionName}.apk"
+        }
+    }
+}
+dependencies {
     implementation "androidx.legacy:legacy-support-v4:$rootProject.legacyVersion"
     kapt "androidx.room:room-compiler:$rootProject.roomVersion"
     kapt "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
@@ -69,8 +98,12 @@ e.g:
     implementation "com.google.dagger:hilt-android:$rootProject.hiltVersion"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$rootProject.hiltJetPackVersion"
     implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
-    implementation "com.github.PearKMA:BaseApplication:$rootProject.baseVersion"
     ...
+}
+
+kapt {
+    correctErrorTypes true
+}
 ```
 - Testing:
 ```
@@ -120,8 +153,29 @@ ext {
 	...
     }
 ```
+
+##### build.gradle.kts:
+
+- Create folder buildSrc level project
+
+```
+import org.gradle.kotlin.dsl.`kotlin-dsl`
+
+plugins {
+    `kotlin-dsl`
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+- Create src/main/java/Dependencies.kt, you can code it from repository
+
 ## How to use:
+
 ### 1. Application:
+
 ```
 @HiltAndroidApp
 class App : Application(){
@@ -132,6 +186,9 @@ class App : Application(){
     override fun onCreate() {
         super.onCreate()
         instance = this
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 }
 ```
@@ -206,7 +263,9 @@ class App : Application(){
     // onNavigate()/ onNavigateUp()
 ```
 ### 4. RecyclerView Adapter
-- Support max 1 data variable (item) & 1 listener (listener)
+
+- Support max 1 data variable (item) & 1 listener (listener) (custom it if you want more)
+
 #### 1. Normal adapter
 ```
 val adapter by lazy {
@@ -350,8 +409,8 @@ View.onDebounceClick(delay){
 }
 ```
 #### 2. View
-- check visibility: .isVisible(), .isGone(), .isInvisible()
-- set visibility: .visible(), .gone(), .invisible()
+
+- set visibility: .show(), .gone(), .hide()
 - keyboard: EditText.showKeyboard(), EditText.hideKeyboard()
 - observer livedata:  .observer(liveData,{})
 - Glide: loadNormal, loadCenterCrop, loadRoundedCorner, loadBackground
