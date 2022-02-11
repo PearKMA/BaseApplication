@@ -48,3 +48,4 @@ fun <T> Fragment.getNavigationResult(@IdRes id: Int, key: String, onResult: (res
         }
     })
 }
+

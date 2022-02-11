@@ -24,7 +24,7 @@ object Versions {
     const val desugar = "1.1.5"
     const val espresso = "3.4.0"
     const val exoplayer = "2.16.1"
-    const val firebase = "29.0.2"
+    const val firebase = "29.0.4"
     const val fragmentKtx = "1.4.1"
     const val glide = "4.12.0"
     const val gradle = "4.2.1"
@@ -35,10 +35,12 @@ object Versions {
     const val junitAndroid = "1.1.3"
     const val legacy = "1.0.0"
     const val lifecycle = "2.4.0"
+    const val lottie = "4.2.2"
     const val material = "1.5.0"
     const val navigation = "2.4.0"
     const val recyclerView = "1.2.1"
     const val retrofit = "2.9.0"
+    const val robolectric = "4.7.3"
     const val room = "2.4.1"
     const val sdp_ssp = "1.0.6"
     const val timber = "4.7.1"
@@ -68,14 +70,11 @@ object Deps {
 
     //legacy
     const val legacy = "androidx.legacy:legacy-support-v4:${Versions.legacy}"
-
     //sdp ssp
     const val sdp = "com.intuit.sdp:sdp-android:${Versions.sdp_ssp}"
     const val ssp = "com.intuit.ssp:ssp-android:${Versions.sdp_ssp}"
-
     //fragmentKtx
     const val fragmentKtx = "androidx.fragment:fragment-ktx:${Versions.fragmentKtx}"
-
     //lifecycle
     const val livedata = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}"
     const val viewmodel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}"
@@ -85,18 +84,14 @@ object Deps {
     const val navigationFragment =
         "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}"
     const val navigationUi = "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
-
     //recyclerview
     const val recyclerview = "androidx.recyclerview:recyclerview:${Versions.recyclerView}"
-
     // exoplayer
     const val exoCore = "com.google.android.exoplayer:exoplayer-core:${Versions.exoplayer}"
     const val exoUi = "com.google.android.exoplayer:exoplayer-ui:${Versions.exoplayer}"
-
     //room
     const val roomRuntime = "androidx.room:room-runtime:${Versions.room}"
     const val roomKtx = "androidx.room:room-ktx:${Versions.room}"
-
     //viewpager
     const val viewpager2 = "androidx.viewpager2:viewpager2:${Versions.viewpager}"
 
@@ -107,14 +102,11 @@ object Deps {
 
     //glide
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
-
     //retrofit
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val gson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
-
     // DataStore
     const val datastore = "androidx.datastore:datastore-preferences:${Versions.datastore}"
-
     //timber
     const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
 
@@ -129,12 +121,18 @@ object Deps {
     //hilt
     const val hilt = "com.google.dagger:hilt-android:${Versions.hilt}"
     const val hiltWorker = "androidx.hilt:hilt-work:${Versions.hiltWorker}"
+
+    // lottie
+    const val lottie = "com.airbnb.android:lottie:${Versions.lottie}"
+
     // endregion
 
     // region testing
     //testImplementation
     const val junit = "junit:junit:${Versions.junit}"
     const val truth = "com.google.truth:truth:${Versions.googleTruth}"
+    const val robolectric = "org.robolectric:robolectric:${Versions.robolectric}"
+    const val hiltTest = "com.google.dagger:hilt-android-testing:${Versions.hilt}"
 
     //androidTestImplementation
     const val androidJunit = "androidx.test.ext:junit:${Versions.junitAndroid}"

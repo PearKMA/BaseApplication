@@ -1,7 +1,5 @@
 package com.baseandroid.baselibrary.model
 
-import okhttp3.ResponseBody
-
 sealed class ActionEvent<out T> {
     object Loading : ActionEvent<Nothing>()
     data class Success<out T>(val value: T) : ActionEvent<T>()
@@ -11,11 +9,10 @@ sealed class ActionEvent<out T> {
 
 
 sealed class Resource<out T> {
-    data class Success<out T>(val value: T) : Resource<T>()
-    data class Failure(
-        val isNetworkError: Boolean,
-        val errorCode: Int?,
-        val errorBody: ResponseBody?
+    data class Success<out T>(val data: T) : Resource<T>()
+    data class Failure<out T>(
+        val throwable: Throwable,
+        val data: T? = null
     ) : Resource<Nothing>()
 
     object Loading : Resource<Nothing>()
