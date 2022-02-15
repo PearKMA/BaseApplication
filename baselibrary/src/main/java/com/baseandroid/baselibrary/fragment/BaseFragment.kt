@@ -82,7 +82,6 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         setScreenType()
         initBackPress()
         initViews(savedInstanceState)
-        initViews()
     }
 
     override fun onPause() {
@@ -101,8 +100,6 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // endregion
 
     // region open function
-    open fun initViews() {}
-
     open fun initViews(savedInstanceState: Bundle?) {}
 
     open fun handleBackPressed() {}

@@ -43,6 +43,7 @@ object Versions {
     const val robolectric = "4.7.3"
     const val room = "2.4.1"
     const val sdp_ssp = "1.0.6"
+    const val swipeRefreshLayout = "1.1.0"
     const val timber = "4.7.1"
     const val viewpager = "1.0.0"
     const val worker = "2.7.1"
@@ -67,6 +68,8 @@ object Deps {
     const val material = "com.google.android.material:material:${Versions.material}"
     const val constraintlayout =
         "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}"
+    const val swipeRefreshLayout =
+        "androidx.swiperefreshlayout:swiperefreshlayout:${Versions.swipeRefreshLayout}"
 
     //legacy
     const val legacy = "androidx.legacy:legacy-support-v4:${Versions.legacy}"

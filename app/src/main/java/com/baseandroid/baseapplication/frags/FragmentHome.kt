@@ -35,13 +35,6 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
         return Color.TRANSPARENT
     }
 
-    override fun initViews() {
-        if (needReload) {
-            needReload = false
-        }
-        binding.listener = this
-    }
-
     override fun typeScreen(): TypeScreen {
         return if (needReload) TypeScreen.TRANSLUCENT_STATUS_BAR else TypeScreen.NORMAL_SCREEN
     }

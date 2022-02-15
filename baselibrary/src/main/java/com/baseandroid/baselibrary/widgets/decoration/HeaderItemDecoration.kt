@@ -1,4 +1,4 @@
-package com.baseandroid.baselibrary.widgets.header_recycler
+package com.baseandroid.baselibrary.widgets.decoration
 
 import android.graphics.Canvas
 import android.graphics.Rect

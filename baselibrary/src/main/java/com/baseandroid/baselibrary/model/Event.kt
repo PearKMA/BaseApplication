@@ -8,12 +8,15 @@ sealed class ActionEvent<out T> {
 }
 
 
-sealed class Resource<out T> {
-    data class Success<out T>(val data: T) : Resource<T>()
-    data class Failure<out T>(
-        val throwable: Throwable,
-        val data: T? = null
-    ) : Resource<Nothing>()
+sealed class Resource<T>(
+    val data: T? = null,
+    val error: Throwable? = null
+) {
+    class Success<T>(data: T) : Resource<T>(data)
+    class Failure<T>(
+        throwable: Throwable,
+        data: T? = null
+    ) : Resource<T>(data, throwable)
 
-    object Loading : Resource<Nothing>()
+    class Loading<T>(data: T? = null) : Resource<T>(data)
 }
