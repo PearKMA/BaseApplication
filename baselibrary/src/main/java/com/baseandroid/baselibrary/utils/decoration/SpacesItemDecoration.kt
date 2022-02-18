@@ -1,4 +1,4 @@
-package com.baseandroid.baselibrary.widgets.decoration
+package com.baseandroid.baselibrary.utils.decoration
 
 import android.graphics.Rect
 import android.view.View

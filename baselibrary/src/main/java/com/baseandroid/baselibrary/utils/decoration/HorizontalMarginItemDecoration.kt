@@ -1,4 +1,4 @@
-package com.baseandroid.baselibrary.utils.helper
+package com.baseandroid.baselibrary.utils.decoration
 
 import android.content.Context
 import android.graphics.Rect

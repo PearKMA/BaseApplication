@@ -9,8 +9,10 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 
 /**
  * How to use:
@@ -49,6 +51,7 @@ class ExoPlayerHelper(
     private var currentMediaItemIndex = 0
     private var playWhenReady = true
     private var isPlaying = true
+    private var mute = false
     private var handler: Handler = Handler(Looper.getMainLooper())
 
     private var exoPlayer: ExoPlayer? = null
@@ -173,6 +176,29 @@ class ExoPlayerHelper(
         exoPlayer!!.prepare()
     }
 
+    fun initializePlayer(videoUrl: String, audioUrl: String) {
+        exoPlayer = ExoPlayer.Builder(playerView.context).build().apply {
+            repeatMode = Player.REPEAT_MODE_ALL
+            addListener(playerListener)
+            val videoSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
+                .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)))
+            val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
+                .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
+            val mediaItem = MergingMediaSource(videoSource, audioSource)
+            setMediaSource(mediaItem)
+            playWhenReady = true
+            volume = if (mute) {
+                0f
+            } else {
+                audioHelper?.requestAudio()
+                1f
+            }
+            seekTo(currentMediaItemIndex, playbackPosition)
+            prepare()
+        }
+        playerView.player = exoPlayer
+    }
+
     /**
      * Release media player
      */
@@ -187,4 +213,11 @@ class ExoPlayerHelper(
             playerView.player = null
         }
     }
+
+    fun setStateVolume(mute: Boolean) {
+        this.mute = mute
+        exoPlayer?.volume = if (mute) 0f else 1f
+    }
+
+    fun getStateVolume() = (exoPlayer?.volume ?: 0f).toInt()
 }
