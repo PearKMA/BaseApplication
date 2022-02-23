@@ -39,6 +39,7 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
                 requestFeature(Window.FEATURE_NO_TITLE)
             }
         }
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 

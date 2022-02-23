@@ -69,8 +69,13 @@ class ExoPlayerHelper(
 
     private val playerListener = object : Player.Listener {
         override fun onPlayerError(error: PlaybackException) {
-            super.onPlayerError(error)
             onError(error)
+        }
+
+        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+        }
+
+        override fun onPlaybackStateChanged(playbackState: Int) {
         }
     }
 
@@ -186,6 +191,7 @@ class ExoPlayerHelper(
                 .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
             val mediaItem = MergingMediaSource(videoSource, audioSource)
             setMediaSource(mediaItem)
+            playbackPosition = 0
             playWhenReady = true
             volume = if (mute) {
                 0f
@@ -198,6 +204,25 @@ class ExoPlayerHelper(
         }
         playerView.player = exoPlayer
     }
+
+    fun changeMediaSource(videoUrl: String, audioUrl: String) {
+        if (exoPlayer == null) {
+            initializePlayer(videoUrl, audioUrl)
+        } else {
+            val videoSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
+                .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)))
+            val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
+                .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
+            val mediaItem = MergingMediaSource(videoSource, audioSource)
+            exoPlayer?.let {
+                it.playWhenReady = false
+                it.setMediaSource(mediaItem)
+                it.playWhenReady = true
+                it.prepare()
+            }
+        }
+    }
+
 
     /**
      * Release media player
