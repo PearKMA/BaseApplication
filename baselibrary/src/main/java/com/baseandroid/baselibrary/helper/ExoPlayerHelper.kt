@@ -9,10 +9,14 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.upstream.cache.Cache
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 
 /**
  * How to use:
@@ -166,13 +170,6 @@ class ExoPlayerHelper(
         exoPlayer!!.addListener(playerListener)
 
         playerView.player = exoPlayer
-        //val userAgent = Util.getUserAgent(playerView.context, user)
-        /*mediaSource = ProgressiveMediaSource
-            .Factory(
-                DefaultDataSourceFactory(playerView.context, userAgent),
-                DefaultExtractorsFactory()
-            )
-            .createMediaSource(MediaItem.fromUri(Uri.parse(url)))*/
         val mediaItem = MediaItem.fromUri(Uri.parse(url))
         exoPlayer!!.setMediaItem(mediaItem)
         audioHelper?.requestAudio()
@@ -187,9 +184,14 @@ class ExoPlayerHelper(
             addListener(playerListener)
             val videoSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
                 .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)))
-            val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
-                .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
-            val mediaItem = MergingMediaSource(videoSource, audioSource)
+
+            val mediaItem = if (audioUrl.isEmpty()){
+                MergingMediaSource(videoSource)
+            }else {
+                val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
+                    .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
+                MergingMediaSource(videoSource, audioSource)
+            }
             setMediaSource(mediaItem)
             playbackPosition = 0
             playWhenReady = true
@@ -211,9 +213,13 @@ class ExoPlayerHelper(
         } else {
             val videoSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
                 .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)))
-            val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
-                .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
-            val mediaItem = MergingMediaSource(videoSource, audioSource)
+            val mediaItem = if (audioUrl.isEmpty()){
+                MergingMediaSource(videoSource)
+            }else {
+                val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
+                    .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
+                MergingMediaSource(videoSource, audioSource)
+            }
             exoPlayer?.let {
                 it.playWhenReady = false
                 it.setMediaSource(mediaItem)
