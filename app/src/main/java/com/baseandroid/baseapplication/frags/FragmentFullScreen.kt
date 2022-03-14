@@ -1,6 +1,7 @@
 package com.baseandroid.baseapplication.frags
 
 import android.graphics.Color
+import android.os.Bundle
 import com.baseandroid.baseapplication.R
 import com.baseandroid.baseapplication.databinding.FragmentFullScreenBinding
 import com.baseandroid.baselibrary.fragment.BaseFragment
@@ -28,7 +29,7 @@ class FragmentFullScreen : BaseFragment<FragmentFullScreenBinding>(), IFullScree
         return Color.TRANSPARENT
     }
 
-    override fun initViews() {
+    override fun initViews(savedInstanceState: Bundle?) {
         binding.listener = this
     }
 

@@ -1,19 +1,16 @@
 package com.baseandroid.baselibrary.dialog
 
-import android.app.Dialog
 import android.os.Bundle
-import android.view.Gravity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.fragment.findNavController
 import com.baseandroid.baselibrary.R
 import com.baseandroid.baselibrary.utils.screenHeight
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment() {
@@ -36,6 +33,7 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = cancelable()
+        setupBackPressListener()
         initHeightDialog()
         initViews()
     }
@@ -71,11 +69,15 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
 
     }
 
+    protected open fun onBackPressed() {
+
+    }
+
     protected open fun heightScale(): Float = 1.0f
 
     protected open fun getContainerView(): View? = null
 
-    protected open fun navigateUp(idCurrentDestination : Int){
+    protected open fun navigateUp(idCurrentDestination: Int) {
         if (findNavController().currentDestination?.id == idCurrentDestination) {
             findNavController().navigateUp()
         }
@@ -83,6 +85,19 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
     // endregion
 
     // region private method
+    private fun setupBackPressListener() {
+        this.view?.isFocusableInTouchMode = true
+        this.view?.requestFocus()
+        this.view?.setOnKeyListener { _, keyCode, _ ->
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                onBackPressed()
+                true
+            } else {
+                false
+            }
+        }
+    }
+
     private fun initHeightDialog() {
         val rootView = getContainerView() ?: return
 
@@ -94,7 +109,7 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
                 val behavior = BottomSheetBehavior.from(rootView.parent as View)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
 
         }
     }

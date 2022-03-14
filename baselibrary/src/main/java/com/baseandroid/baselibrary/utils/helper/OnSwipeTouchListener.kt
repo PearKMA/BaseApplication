@@ -5,7 +5,8 @@ import android.content.Context
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import kotlin.math.abs
+import kotlin.math.PI
+import kotlin.math.atan2
 
 open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
     private val gestureDetector = GestureDetector(context, GestureListener())
@@ -44,7 +45,42 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
             velocityX: Float,
             velocityY: Float
         ): Boolean {
-            var result = false
+            // Grab two events located on the plane at e1=(x1, y1) and e2=(x2, y2)
+            // Let e1 be the initial event
+            // e2 can be located at 4 different positions, consider the following diagram
+            // (Assume that lines are separated by 90 degrees.)
+            //
+            //
+            //         \ A  /
+            //          \  /
+            //       D   e1   B
+            //          /  \
+            //         / C  \
+            //
+            // So if (x2,y2) falls in region:
+            //  A => it's an UP swipe
+            //  B => it's a RIGHT swipe
+            //  C => it's a DOWN swipe
+            //  D => it's a LEFT swipe
+            //
+            val x1 = e1?.x ?: 0f
+            val y1 = e1?.y ?: 0f
+
+            val x2 = e2?.x ?: 0f
+            val y2 = e2?.y ?: 0f
+
+            val angle = getAngle(x1, y1, x2, y2)
+
+            when (angle.toInt()) {
+                in 45..135 -> onSwipeBottomToTop()
+                in 0..45, in 315..360 -> onSwipeRightToLeft()
+                in 225..315 -> onSwipeTopToBottom()
+                else -> onSwipeLeftToRight()
+            }
+
+            return false
+
+            /*var result = false
             try {
                 if (null != e1 && null != e2) {
                     val diffY = e2.y - e1.y
@@ -69,7 +105,12 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
                 e.printStackTrace()
             }
 
-            return result
+            return result*/
+        }
+
+        private fun getAngle(x1: Float, y1: Float, x2: Float, y2: Float): Double {
+            val rad = atan2(y1 - y2, x2 - x1) + PI
+            return (rad * 180 / PI + 180) % 360
         }
     }
 }
