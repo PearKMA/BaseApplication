@@ -9,7 +9,6 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Player.STATE_ENDED
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
@@ -17,6 +16,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 
 /**
+ *
  * How to use:
  *
  * init constructor + call function initAudioManager()      # important
@@ -35,7 +35,8 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
  * onstart:     initializePlayer(url)
  * onstop:      killPlayer()
  */
-class ExoPlayerHelper(
+//!!! Deprecated in next version
+open class ExoPlayerHelper(
     private val playerView: PlayerView,
     onError: (PlaybackException) -> Unit,
     delay: Long = 1000,
@@ -46,16 +47,15 @@ class ExoPlayerHelper(
     interface IExoPlayerCallback {
         fun onAudioLoss(onLoss: Boolean)
         fun onCurrentTime(time: String, progress: Int)
-        fun onMediaEnded()
     }
 
     private var audioHelper: AudioHelper? = null
+    private var volume = 1f
     private var playbackPosition: Long = 0
     private var currentMediaItemIndex = 0
     private var playWhenReady = true
     private var isPlaying = true
     private var mute = false
-    private var isPreview = false
     private var handler: Handler = Handler(Looper.getMainLooper())
 
     private var exoPlayer: ExoPlayer? = null
@@ -75,16 +75,6 @@ class ExoPlayerHelper(
         override fun onPlayerError(error: PlaybackException) {
             onError(error)
         }
-
-        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            if (playbackState == STATE_ENDED && isPreview) {
-                callBack?.onMediaEnded()
-            }
-        }
-
-        override fun onPlaybackStateChanged(playbackState: Int) {
-        }
-
     }
 
     /**
@@ -205,7 +195,7 @@ class ExoPlayerHelper(
                 0f
             } else {
                 audioHelper?.requestAudio()
-                1f
+                this.volume
             }
             seekTo(currentMediaItemIndex, playbackPosition)
             prepare()
@@ -215,7 +205,7 @@ class ExoPlayerHelper(
 
     fun initializeRemotePlayer(videoUrl: String, audioUrl: String) {
         exoPlayer = ExoPlayer.Builder(playerView.context).build().apply {
-            repeatMode = if (isPreview) Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ALL
+            repeatMode = Player.REPEAT_MODE_ALL
             addListener(playerListener)
             val videoSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
                 .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)))
@@ -234,7 +224,7 @@ class ExoPlayerHelper(
                 0f
             } else {
                 audioHelper?.requestAudio()
-                1f
+                this.volume
             }
             seekTo(currentMediaItemIndex, playbackPosition)
             prepare()
@@ -243,7 +233,6 @@ class ExoPlayerHelper(
     }
 
     fun changeMediaSource(videoUrl: String, audioUrl: String, preview: Boolean = false) {
-        isPreview = preview
         if (exoPlayer == null) {
             initializeRemotePlayer(videoUrl, audioUrl)
         } else {
@@ -258,14 +247,13 @@ class ExoPlayerHelper(
             }
             exoPlayer?.let {
                 it.playWhenReady = false
-                it.repeatMode = if (isPreview) Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ALL
                 it.setMediaSource(mediaItem)
                 it.playWhenReady = true
                 it.volume = if (mute) {
                     0f
                 } else {
                     audioHelper?.requestAudio()
-                    1f
+                    this.volume
                 }
                 it.prepare()
             }
@@ -292,10 +280,13 @@ class ExoPlayerHelper(
         exoPlayer?.playWhenReady = play
     }
 
-    fun setStateVolume(mute: Boolean) {
-        this.mute = mute
-        exoPlayer?.volume = if (mute) 0f else 1f
+    fun changeVolume(volume: Float) {
+        this.volume = volume
+        exoPlayer?.volume = if (mute) 0f else volume
     }
 
-    fun getStateVolume() = (exoPlayer?.volume ?: 0f).toInt()
+    fun muteMedia(mute: Boolean) {
+        this.mute = mute
+        exoPlayer?.volume = if (mute) 0f else this.volume
+    }
 }

@@ -33,7 +33,6 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = cancelable()
-        setupBackPressListener()
         initHeightDialog()
         initViews()
     }
@@ -55,6 +54,7 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
                 R.style.DialogAnimation
             )
         }
+        setupBackPressListener()
     }
     // endregion
 
