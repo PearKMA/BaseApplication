@@ -155,7 +155,7 @@ object Deps {
 }
 
 object AppDetail {
-    const val appName = "ChargingAnimation"
+    const val appName = "BaseApplication"
     const val versionName = "1.0.0"
 
     // Change these values as needed

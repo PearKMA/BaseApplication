@@ -18,9 +18,13 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             // Use `resolutionStrategy` to define the Hilt plugin and its coordinate
-            if (requested.id.id == 'dagger.hilt.android.plugin') {
-                useModule('com.google.dagger:hilt-android-gradle-plugin:2.38.1')
+            if( requested.id.id == 'dagger.hilt.android.plugin') {
+                useModule("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
             }
+
+//            if( requested.id.id == 'com.google.firebase.crashlytics') {
+//                useModule("com.google.firebase:firebase-crashlytics-gradle:2.8.1")
+//            }
         }
     }
     // No need to define the Hilt plugin.
@@ -40,6 +44,7 @@ dependencyResolutionManagement {
 
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
 //        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }

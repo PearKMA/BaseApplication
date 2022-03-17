@@ -1,10 +1,13 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
     id 'dagger.hilt.android.plugin'
-    id 'com.solar.dev.plugin'
+    id 'kotlin-parcelize'
+//    id 'com.google.gms.google-services'
+//    id 'com.google.firebase.crashlytics'
+    id 'com.base.plugin'
 }
 
 //def localProperties = new Properties()
@@ -54,7 +57,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "ChargingAnimation_${variant.buildType.name}_${defaultConfig.versionName}.apk"
+            outputFileName = "Base_${variant.buildType.name}_${defaultConfig.versionName}.apk"
         }
     }
 }
