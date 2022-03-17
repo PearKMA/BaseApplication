@@ -1,6 +1,6 @@
 /**
  * #1: mkdir buildSrc
- * #2: mkdir -p buildSrc/src/main/java
+ * #2: mkdir "buildSrc/src/main/java"
  *
  * option (if not import): import org.gradle.kotlin.dsl.`kotlin-dsl`
  * */

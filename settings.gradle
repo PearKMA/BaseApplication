@@ -53,3 +53,5 @@ dependencyResolutionManagement {
 include ':baselibrary'
 include ':app'
 rootProject.name = "BaseApplication"
+//include ':baselibrary'
+//project(':baselibrary').projectDir=new File('E:\\Hung\\Projects\\BaseApplication\\baselibrary')
