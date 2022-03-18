@@ -50,7 +50,7 @@ android {
 
 dependencies {
 //    kapt 'androidx.room:room-compiler:2.2.5'
-    kapt Deps.glideKapt
+    kapt Kapt.glideKapt
 //    kapt 'com.google.dagger:hilt-android-compiler:2.29.1-alpha'
 //    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.6.10' add if Collections, Ranges, Math, Regex, File extensions, Locks, etc not found
     implementation Deps.coreKtx

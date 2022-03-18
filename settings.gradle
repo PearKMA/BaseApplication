@@ -19,7 +19,7 @@ pluginManagement {
         eachPlugin {
             // Use `resolutionStrategy` to define the Hilt plugin and its coordinate
             if( requested.id.id == 'dagger.hilt.android.plugin') {
-                useModule("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
+                useModule("com.google.dagger:hilt-android-gradle-plugin:2.41")
             }
 
 //            if( requested.id.id == 'com.google.firebase.crashlytics') {

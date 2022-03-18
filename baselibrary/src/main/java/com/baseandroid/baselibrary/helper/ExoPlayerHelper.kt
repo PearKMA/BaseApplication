@@ -11,7 +11,7 @@ import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MergingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 
@@ -37,7 +37,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
  */
 //!!! Deprecated in next version
 open class ExoPlayerHelper(
-    private val playerView: PlayerView,
+    private val playerView: StyledPlayerView,
     onError: (PlaybackException) -> Unit,
     delay: Long = 1000,
     private var callBack: IExoPlayerCallback?

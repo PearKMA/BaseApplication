@@ -21,7 +21,7 @@ android {
         minSdkVersion Versions.minSdk
         targetSdk Versions.targetSdk
         versionCode 1
-        versionName AppDetail.versionName
+        versionName Const.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -63,9 +63,9 @@ android {
 }
 
 dependencies {
-    kapt Deps.roomKapt
-    kapt Deps.glideKapt
-    kapt Deps.hiltKapt
+    kapt Kapt.roomKapt
+    kapt Kapt.glideKapt
+    kapt Kapt.hiltKapt
 //    implementation "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlin_version" add if Collections, Ranges, Math, Regex, File extensions, Locks, etc not found
     implementation Deps.coreKtx
     implementation Deps.appcompat

@@ -1,9 +1,9 @@
 package tasks
 
-import AppDetail.newApkName
-import AppDetail.previousName
-import AppDetail.previousPath
-import AppDetail.targetPath
+import Const.newApkName
+import Const.previousName
+import Const.previousPath
+import Const.targetPath
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import java.io.File
