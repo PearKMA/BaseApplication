@@ -1,10 +1,7 @@
 package com.baseandroid.baselibrary.dialog
 
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.fragment.findNavController
@@ -54,6 +51,9 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
                 R.style.DialogAnimation
             )
         }
+        if (removeDimBackground()) {
+            dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        }
         setupBackPressListener()
     }
     // endregion
@@ -64,6 +64,8 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
 
     // region protected method
     protected open fun cancelable(): Boolean = true
+
+    protected open fun removeDimBackground(): Boolean = false
 
     protected open fun initViews() {
 
