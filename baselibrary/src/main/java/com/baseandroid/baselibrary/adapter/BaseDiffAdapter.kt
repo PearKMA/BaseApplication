@@ -48,7 +48,7 @@ abstract class BaseDiffAdapter<T>(
     // endregion
 
     // region ViewHolder
-    class ViewHolderBase<T>(
+    open class ViewHolderBase<T>(
         private val binding: ViewDataBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
