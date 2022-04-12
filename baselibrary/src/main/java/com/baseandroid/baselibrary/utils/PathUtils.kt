@@ -1,6 +1,7 @@
 package com.baseandroid.baselibrary.utils
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
@@ -63,10 +64,26 @@ fun getPathFolder(context: Context, nameFolder: String): String {
 
 fun getOutputMediaDirectory(activity: Activity, name: String): File {
     val mediaDir = activity.externalMediaDirs.firstOrNull()?.let {
-        File(it, name).apply { mkdirs() }
+        File(it, name).apply {
+            if (!exists()) {
+                mkdirs()
+            }
+        }
     }
     return if (mediaDir != null && mediaDir.exists())
         mediaDir else activity.filesDir
+}
+
+fun getOutputMediaDirectory(application: Application, name: String): File {
+    val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
+        (if (name.isEmpty()) it else File(it, name)).apply {
+            if (!exists()) {
+                mkdirs()
+            }
+        }
+    }
+    return if (mediaDir != null && mediaDir.exists())
+        mediaDir else application.filesDir
 }
 
 fun getOutputFileDirectory(context: Context): File {

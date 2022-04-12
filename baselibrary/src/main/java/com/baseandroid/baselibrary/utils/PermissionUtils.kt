@@ -13,36 +13,36 @@ import androidx.core.content.ContextCompat
 import com.baseandroid.baselibrary.fragment.BaseFragment
 import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
-object PermissionUtils {
-    fun showDialogPermission(context: Activity, title_id: Int, contentId: Int) {
-        val dialogPermission: AlertDialog?
 
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(context.getString(title_id))
-        builder.setMessage(context.getString(contentId))
-        builder.setCancelable(true)
-        builder.setPositiveButton(
-            "Go to settings"
-        ) { _, _ ->
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .setData(Uri.fromParts("package", context.packageName, null))
-            context.startActivity(intent)
-        }
+fun showDialogPermission(context: Activity, title_id: Int, contentId: Int) {
+    val dialogPermission: AlertDialog?
 
-        /*builder.setNegativeButton(
-            "Exit"
-        ) { _, _ ->
-            dialogPermission?.dismiss()
-        }*/
+    val builder = AlertDialog.Builder(context)
+    builder.setTitle(context.getString(title_id))
+    builder.setMessage(context.getString(contentId))
+    builder.setCancelable(true)
+    builder.setPositiveButton(
+        "Go to settings"
+    ) { _, _ ->
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            .setData(Uri.fromParts("package", context.packageName, null))
+        context.startActivity(intent)
+    }
 
-        dialogPermission = builder.create()
+    /*builder.setNegativeButton(
+        "Exit"
+    ) { _, _ ->
+        dialogPermission?.dismiss()
+    }*/
 
-        if (!context.isFinishing) {
-            dialogPermission.show()
-        }
+    dialogPermission = builder.create()
+
+    if (!context.isFinishing) {
+        dialogPermission.show()
     }
 }
+
 
 fun Context.checkPermissionsGranted(list: List<String>): Boolean {
     list.forEach { permission ->
@@ -80,7 +80,7 @@ fun BaseFragment<*>.checkPermissions(
         if (!requireActivity().isFinishing) {
             try {
                 if (onShowDialog == null) {
-                    PermissionUtils.showDialogPermission(
+                    showDialogPermission(
                         requireActivity(),
                         title_id,
                         contentId

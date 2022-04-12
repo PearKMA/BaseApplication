@@ -1,7 +1,7 @@
 /**
  * #1: mkdir buildSrc
  * #2: mkdir "buildSrc/src/main/java"
- *
+ * #3: type NUL > buildSrc/build.gradle.kts
  * option (if not import): import org.gradle.kotlin.dsl.`kotlin-dsl`
  * */
 

@@ -73,9 +73,9 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
 
             when (angle.toInt()) {
                 in 45..135 -> onSwipeBottomToTop()
-                in 0..45, in 315..360 -> onSwipeRightToLeft()
+                in 0..45, in 315..360 -> onSwipeLeftToRight()
                 in 225..315 -> onSwipeTopToBottom()
-                else -> onSwipeLeftToRight()
+                else -> onSwipeRightToLeft()
             }
 
             return false
