@@ -12,14 +12,12 @@ interface IFullScreenListener {
 }
 
 class FragmentFullScreen : BaseFragment<FragmentFullScreenBinding>(), IFullScreenListener {
-    // region Const and Fields
-
-    // endregion
-
     // region override/ listener method
     override fun getLayoutId(): Int {
         return R.layout.fragment_full_screen
     }
+
+    override fun getViewId() = R.id.fragmentFullScreen
 
     override fun isDarkTheme(): Boolean {
         return false
@@ -42,11 +40,7 @@ class FragmentFullScreen : BaseFragment<FragmentFullScreenBinding>(), IFullScree
     }
 
     override fun onClose() {
-        onNavigateUp(R.id.fragmentFullScreen)
+        onNavigateUp()
     }
-    // endregion
-
-    // region private method
-
     // endregion
 }

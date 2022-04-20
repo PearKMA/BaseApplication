@@ -27,6 +27,8 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
         return R.layout.fragment_home
     }
 
+    override fun getViewId() = R.id.fragmentHome
+
     override fun isDarkTheme(): Boolean {
         return needReload
     }
@@ -48,7 +50,7 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
             R.string.text_title,
             R.string.text_content
         ) {
-            onNavigate(R.id.fragmentHome, R.id.action_fragmentHome_to_fragmentFullScreen)
+            onNavigate(R.id.action_fragmentHome_to_fragmentFullScreen)
         }
     }
 

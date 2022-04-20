@@ -2,6 +2,7 @@ package com.baseandroid.baselibrary.fragment
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -94,9 +95,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // region abstract function
     abstract fun getLayoutId(): Int
 
-    abstract fun isDarkTheme(): Boolean
-
-    abstract fun getStatusBarColor(): Int
+    abstract fun getViewId(): Int
     // endregion
 
     // region open function
@@ -105,6 +104,10 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     open fun handleBackPressed() {}
 
     open fun typeScreen(): TypeScreen = TypeScreen.NONE
+
+    open fun isDarkTheme(): Boolean = false
+
+    open fun getStatusBarColor(): Int = Color.TRANSPARENT
 
     open fun initPause() {}
 
@@ -133,14 +136,14 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         resultLauncher.launch(intent, option)
     }
 
-    protected fun onNavigateUp(viewId: Int) {
-        if (findNavController().currentDestination?.id == viewId) {
+    protected fun onNavigateUp() {
+        if (findNavController().currentDestination?.id == getViewId()) {
             findNavController().navigateUp()
         }
     }
 
-    protected fun onNavigate(viewId: Int, deepLink: Int, bundle: Bundle? = null) {
-        if (findNavController().currentDestination?.id == viewId) {
+    protected fun onNavigate(deepLink: Int, bundle: Bundle? = null) {
+        if (findNavController().currentDestination?.id == getViewId()) {
             if (bundle == null) {
                 findNavController().navigate(deepLink)
             } else {
@@ -149,8 +152,8 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         }
     }
 
-    protected fun onNavigate(viewId: Int, action: NavDirections) {
-        if (findNavController().currentDestination?.id == viewId) {
+    protected fun onNavigate(action: NavDirections) {
+        if (findNavController().currentDestination?.id == getViewId()) {
             findNavController().navigate(action)
         }
     }
