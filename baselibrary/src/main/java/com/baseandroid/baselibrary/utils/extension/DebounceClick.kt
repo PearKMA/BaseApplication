@@ -71,6 +71,11 @@ fun View.onDebounceClick(
                 override fun onDebounceClick(v: View?) = onClick(v)
             })
         }
+        is AlphaConstraintLayout -> {
+            setOnAlphaLayoutListener(object : AlphaDebounceClickListener(maxTime) {
+                override fun onDebounceClick(v: View?) = onClick(v)
+            })
+        }
         else -> {
             setOnClickListener(object : DebounceClickListener(maxTime) {
                 override fun onDebounceClick(v: View?) = onClick(v)

@@ -221,6 +221,16 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
                         insetsController?.hide(WindowInsets.Type.navigationBars())
                         insetsController?.systemBarsBehavior =
                             WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                        if (isDarkTheme()) {
+                            decorView.windowInsetsController?.setSystemBarsAppearance(
+                                0, APPEARANCE_LIGHT_STATUS_BARS
+                            )
+                        } else {
+                            decorView.windowInsetsController?.setSystemBarsAppearance(
+                                APPEARANCE_LIGHT_STATUS_BARS,
+                                APPEARANCE_LIGHT_STATUS_BARS
+                            )
+                        }
                     } else {
                         addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                         addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
