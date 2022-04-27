@@ -7,13 +7,20 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-abstract class BaseMediaStoreViewModel(application: Application) : AndroidViewModel(application) {
+abstract class BaseMediaStoreViewModel<EventClass : Any>(application: Application) :
+    BaseMainViewModel<EventClass>(application) {
+    //region Const and Fields
     private var contentObserver: ContentObserver? = null
+    //endregion
 
+    //region abstract methods
+    abstract suspend fun actionFetchData(isStorageChange: Boolean = false)
+    //endregion
+
+    //region open methods
     open fun fetchData(isStorageChange: Boolean = false) {
         viewModelScope.launch {
             actionFetchData(isStorageChange)
@@ -27,9 +34,8 @@ abstract class BaseMediaStoreViewModel(application: Application) : AndroidViewMo
         }
     }
 
-    abstract suspend fun actionFetchData(isStorageChange: Boolean = false)
-
     open fun getUriStore(): Uri = MediaStore.Files.getContentUri("external")
+    //endregion
 
     override fun onCleared() {
         contentObserver?.let {
