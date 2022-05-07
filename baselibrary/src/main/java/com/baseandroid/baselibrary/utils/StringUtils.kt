@@ -15,6 +15,14 @@ fun isFileNameValid(nameFile: String, extension: String): Boolean {
     return matcher.matches()
 }
 
+fun String?.isEmail(): Boolean {
+    return this?.let {
+        Pattern.matches(this, "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*\$")
+    } ?: let {
+        false
+    }
+}
+
 fun isMatchedRegex(string: String, regex: String): Boolean {
     val pattern = Pattern.compile(regex)
     val optimalString = optimalString(string)

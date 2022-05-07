@@ -27,7 +27,9 @@ enum class TypeScreen {
 
 abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // region Const and Fields
-    protected lateinit var binding: BD
+    private var _binding: BD? = null
+    protected val binding: BD
+        get() = _binding!!
 
     // request permission
     private var onAllow: (() -> Unit)? = null
@@ -73,7 +75,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
+        _binding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
@@ -83,12 +85,18 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
         setScreenType()
         initBackPress()
         initViews(savedInstanceState)
+        observableData()
     }
 
     override fun onPause() {
         killToast()
         initPause()
         super.onPause()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
     // endregion
 
@@ -100,6 +108,8 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
 
     // region open function
     open fun initViews(savedInstanceState: Bundle?) {}
+
+    open fun observableData() {}
 
     open fun handleBackPressed() {}
 
