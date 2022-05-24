@@ -54,6 +54,7 @@ class AudioHelper(context: Context, onAudioLoss: (Boolean) -> Unit) {
      * Xử lý khi có cuộc gọi
      */
     private val phoneListener = object : PhoneStateListener() {
+        @Deprecated("Deprecated in Java")
         override fun onCallStateChanged(state: Int, phoneNumber: String?) {
             if (state != TelephonyManager.CALL_STATE_IDLE) {
                 onAudioLoss.invoke(true)

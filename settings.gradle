@@ -17,10 +17,7 @@ pluginManagement {
 
     resolutionStrategy {
         eachPlugin {
-            // Use `resolutionStrategy` to define the Hilt plugin and its coordinate
-            if( requested.id.id == 'dagger.hilt.android.plugin') {
-                useModule("com.google.dagger:hilt-android-gradle-plugin:2.41")
-            }
+            // Use `resolutionStrategy` to define plugin and its coordinate
 
 //            if( requested.id.id == 'com.google.firebase.crashlytics') {
 //                useModule("com.google.firebase:firebase-crashlytics-gradle:2.8.1")
