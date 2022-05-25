@@ -1,6 +1,9 @@
 package com.baseandroid.baselibrary.utils
 
+import java.text.DecimalFormat
 import java.util.regex.Pattern
+import kotlin.math.log10
+import kotlin.math.pow
 
 /**
  * Kiểm tra tên file
@@ -55,4 +58,17 @@ fun String.hexDecodeString(): String {
         output.append(str.toInt(16).toChar())
     }
     return output.toString()
+}
+
+fun readableFormat(
+    l: Long,
+    defaultValue: String = "0",
+    units: Array<String>,
+    divisionUnit: Double
+): String {
+    if (l <= 0) return defaultValue
+    val digitGroups = (log10(l.toDouble()) / log10(divisionUnit)).toInt()
+    return DecimalFormat("#,##0.##").format(
+        l / divisionUnit.pow(digitGroups.toDouble())
+    ).toString() + "" + units[digitGroups]
 }

@@ -54,7 +54,6 @@ android {
         // Enable Coroutines
         freeCompilerArgs += Args.coroutines
     }
-    namespace 'com.baseandroid.baseapplication'
 
     applicationVariants.all { variant ->
         variant.outputs.all {

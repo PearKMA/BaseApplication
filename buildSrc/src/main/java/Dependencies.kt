@@ -82,6 +82,7 @@ object Deps {
     const val firebase = "com.google.firebase:firebase-bom:${Versions.firebase}"
     const val crashlytics = "com.google.firebase:firebase-crashlytics-ktx"
     const val analytics = "com.google.firebase:firebase-analytics-ktx"
+    const val configs = "com.google.firebase:firebase-config-ktx"
 
     //worker
     const val worker = "androidx.work:work-runtime-ktx:${Versions.worker}"
