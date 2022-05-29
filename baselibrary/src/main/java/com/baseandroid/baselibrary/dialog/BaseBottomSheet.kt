@@ -2,6 +2,7 @@ package com.baseandroid.baselibrary.dialog
 
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.fragment.findNavController
@@ -59,6 +60,7 @@ abstract class BaseBottomSheet<BD : ViewDataBinding> : BottomSheetDialogFragment
     // endregion
 
     // region abstract method
+    @LayoutRes
     abstract fun getLayoutId(): Int
     // endregion
 

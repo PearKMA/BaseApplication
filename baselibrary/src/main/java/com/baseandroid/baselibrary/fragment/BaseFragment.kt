@@ -10,6 +10,7 @@ import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -101,8 +102,9 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // endregion
 
     // region abstract function
+    @LayoutRes
     abstract fun getLayoutId(): Int
-
+    
     abstract fun getViewId(): Int
     // endregion
 

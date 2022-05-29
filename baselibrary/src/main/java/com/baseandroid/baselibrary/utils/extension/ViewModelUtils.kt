@@ -1,6 +1,7 @@
 package com.baseandroid.baselibrary.utils.extension
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,9 +33,18 @@ fun <T> LifecycleOwner.collectWhenStarted(
         delay(firstTimeDelay)
         flow.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .collect(action)
-//        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//            flow.collect(action)
-//        }
+    }
+}
+
+fun LifecycleOwner.collectWhenStarted(
+    firstTimeDelay: Long = 0L,
+    action: (scope: CoroutineScope) -> Unit
+) {
+    lifecycleScope.launch {
+        delay(firstTimeDelay)
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+            action(this)
+        }
     }
 }
 

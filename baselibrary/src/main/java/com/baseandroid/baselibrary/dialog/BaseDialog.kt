@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
@@ -92,6 +93,7 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
     // endregion
 
     // region abstract function
+    @LayoutRes
     abstract fun getLayoutId(): Int
     // endregion
 

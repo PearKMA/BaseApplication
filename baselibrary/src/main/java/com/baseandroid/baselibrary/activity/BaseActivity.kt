@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityOptionsCompat
@@ -74,6 +75,7 @@ abstract class BaseActivity<BD : ViewDataBinding> : AppCompatActivity() {
     // endregion
 
     // region abstract function
+    @LayoutRes
     abstract fun getLayoutId(): Int
     // endregion
 

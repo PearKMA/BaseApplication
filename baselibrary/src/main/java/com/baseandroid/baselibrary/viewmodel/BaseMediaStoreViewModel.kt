@@ -10,8 +10,8 @@ import android.provider.MediaStore
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-abstract class BaseMediaStoreViewModel<EventClass : Any>(application: Application) :
-    BaseMainViewModel<EventClass>(application) {
+abstract class BaseMediaStoreViewModel(application: Application) :
+    BaseMainViewModel(application) {
     //region Const and Fields
     private var contentObserver: ContentObserver? = null
     //endregion
