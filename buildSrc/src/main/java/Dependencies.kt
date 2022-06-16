@@ -30,8 +30,8 @@ object Deps {
     const val legacy = "androidx.legacy:legacy-support-v4:${Versions.legacy}"
 
     //sdp ssp
-    const val sdp = "com.intuit.sdp:sdp-android:${Versions.sdp_ssp}"
-    const val ssp = "com.intuit.ssp:ssp-android:${Versions.sdp_ssp}"
+    const val sdp = "com.intuit.sdp:sdp-android:${Versions.sdp}"
+    const val ssp = "com.intuit.ssp:ssp-android:${Versions.ssp}"
 
     //fragmentKtx
     const val fragmentKtx = "androidx.fragment:fragment-ktx:${Versions.fragmentKtx}"
