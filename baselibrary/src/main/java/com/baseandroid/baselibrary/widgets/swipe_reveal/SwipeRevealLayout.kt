@@ -84,7 +84,7 @@ class SwipeRevealLayout : ViewGroup {
     private var mPrevY = -1f
 
     private lateinit var mDragHelper: ViewDragHelper
-    private lateinit var mGestureDetector: GestureDetectorCompat
+    private var mGestureDetector: GestureDetectorCompat? = null
 
     private var mDragStateChangeListener: DragStateChangeListener? = null
     private var mSwipeListener: SwipeListener? = null
@@ -110,7 +110,7 @@ class SwipeRevealLayout : ViewGroup {
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (null != event) {
-            mGestureDetector.onTouchEvent(event)
+            mGestureDetector?.onTouchEvent(event)
             mDragHelper.processTouchEvent(event)
         }
         return true
@@ -122,7 +122,7 @@ class SwipeRevealLayout : ViewGroup {
         }
 
         mDragHelper.processTouchEvent(ev!!)
-        mGestureDetector.onTouchEvent(ev)
+        mGestureDetector?.onTouchEvent(ev)
         accumulateDragDist(ev)
 
         val couldBecomeClick: Boolean = couldBecomeClick(ev)
@@ -648,8 +648,9 @@ class SwipeRevealLayout : ViewGroup {
         }
         mDragHelper = ViewDragHelper.create(this, 1.0f, mDragHelperCallback)
         mDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_ALL)
-
-        mGestureDetector = GestureDetectorCompat(context, mGestureListener)
+        context?.let {
+            mGestureDetector = GestureDetectorCompat(it, mGestureListener)
+        }
     }
 
     private val mGestureListener = object : GestureDetector.SimpleOnGestureListener() {

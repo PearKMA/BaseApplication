@@ -10,6 +10,8 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import com.baseandroid.baselibrary.R
 import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
@@ -108,6 +110,26 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
 
     protected open fun initViews() {
 
+    }
+
+    protected open fun navigateUp(id: Int, executeMethod: () -> Unit = {}) {
+        if (findNavController().currentDestination?.id == id) {
+            executeMethod()
+            findNavController().navigateUp()
+        }
+    }
+
+    protected open fun popBackStack(id: Int, executeMethod: () -> Unit = {}) {
+        if (findNavController().currentDestination?.id == id) {
+            executeMethod()
+            findNavController().popBackStack()
+        }
+    }
+
+    protected open fun navigate(id: Int, action: NavDirections) {
+        if (findNavController().currentDestination?.id == id) {
+            findNavController().navigate(action)
+        }
     }
     // endregion
 }
