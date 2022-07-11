@@ -21,6 +21,7 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
     open fun onSwipeBottomToTop() {}
     open fun onSwipeTopToBottom() {}
     open fun onSingleTap() {}
+    open fun onLongPress() {}
 
     companion object {
         private const val SWIPE_THRESHOLD = 60
@@ -30,6 +31,12 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
     private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onDown(e: MotionEvent?): Boolean {
             return true
+        }
+
+        override fun onLongPress(e: MotionEvent?) {
+            if (null != e) {
+                onLongPress()
+            }
         }
 
         override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
