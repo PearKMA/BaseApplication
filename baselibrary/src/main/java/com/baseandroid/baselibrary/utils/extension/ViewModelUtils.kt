@@ -2,10 +2,10 @@ package com.baseandroid.baselibrary.utils.extension
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 
@@ -48,6 +48,11 @@ fun LifecycleOwner.collectWhenStarted(
     }
 }
 
+fun <T> ViewModel.send(channel: Channel<T>, value: T) {
+    viewModelScope.launch {
+        channel.send(value)
+    }
+}
 
 /**
  * Returns a flow which performs the given [action] on each value of the original flow's [Event].

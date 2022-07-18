@@ -1,25 +1,19 @@
 package com.baseandroid.baselibrary.helper
 
-import android.content.Context
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import com.baseandroid.baselibrary.utils.formatTime
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.source.MergingMediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.util.Util
 
 /**
  *
  * How to use:
  *
- * init constructor + call function initAudioManager()      # important
+ * init constructor
  * implement interface IExoPlayerCallback
  * -> onAudioLoss:  onloss -> pauseVideo() + set image pause
  *                  else -> resumeVideo() + set image play if resumeVideo() == true else pause
@@ -35,258 +29,191 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
  * onstart:     initializePlayer(url)
  * onstop:      killPlayer()
  */
-//!!! Deprecated in next version
+
 open class ExoPlayerHelper(
     private val playerView: StyledPlayerView,
-    onError: (PlaybackException) -> Unit,
-    delay: Long = 1000,
-    private var callBack: IExoPlayerCallback?
+    delay: Long = 1000
 ) {
-
+    // region Const and Fields
 
     interface IExoPlayerCallback {
         fun onAudioLoss(onLoss: Boolean)
-        fun onCurrentTime(time: String, progress: Int)
+        fun getDurationMedia(duration: Long)
+        fun onPlaybackPositionChanged(position: Long)
+        fun onPlaybackStateChanged(playbackState: Int)
+        fun onIsPlayingChanged(isPlaying: Boolean)
+        fun onPlayerError(error: PlaybackException)
     }
 
-    private var audioHelper: AudioHelper? = null
-    private var volume = 1f
-    private var playbackPosition: Long = 0
-    private var currentMediaItemIndex = 0
+    private var audioHelper: AudioHelper
+    private val playbackStateListener: Player.Listener = playbackStateListener()
+    var listener: IExoPlayerCallback? = null
+    private var mediaItem: MediaItem? = null
+    private var player: ExoPlayer? = null
     private var playWhenReady = true
-    private var isPlaying = true
-    private var mute = false
+    private var currentItem = 0
+    private var playbackPosition = 0L
+    private var enableRepeat = false
+    private var volume = 1f
+
     private var handler: Handler = Handler(Looper.getMainLooper())
-
-    private var exoPlayer: ExoPlayer? = null
-    private var mediaSource: ProgressiveMediaSource? = null
-
     private var mRunnable: Runnable = object : Runnable {
         override fun run() {
-            if (exoPlayer != null) {
-                val current = exoPlayer!!.currentPosition
-                callBack?.onCurrentTime(formatTime(current), current.toInt())
+            if (player != null) {
+                val current = player!!.currentPosition
+                listener?.onPlaybackPositionChanged(current)
+                handler.postDelayed(this, delay)
             }
-            handler.postDelayed(this, delay)
         }
     }
 
-    private val playerListener = object : Player.Listener {
-        override fun onPlayerError(error: PlaybackException) {
-            onError(error)
+    init {
+        audioHelper = AudioHelper(playerView.context) {
+            listener?.onAudioLoss(it)
         }
     }
 
-    /**
-     * KhỞi tạo trình quản lý audio
-     */
-    fun initAudioManager(context: Context) {
-        audioHelper = AudioHelper(context) {
-            callBack?.onAudioLoss(it)
+    // endregion
+
+    // region controller
+    open fun getPlayer() = player
+
+    open fun enableRepeat(enable: Boolean) {
+        enableRepeat = enable
+        player?.repeatMode = if (!enable) Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ALL
+    }
+
+    open fun setMedia(media: MediaItem) {
+        mediaItem = media
+    }
+
+    open fun changeMedia(media: MediaItem) {
+        mediaItem = media
+        player?.setMediaItem(mediaItem!!, true)
+        player?.prepare()
+    }
+
+    open fun changeStatePlayer(playing: Boolean) {
+        player?.let {
+            if (playing) {
+                audioHelper.requestAudio()
+            } else {
+                audioHelper.stopRequestAudio()
+            }
+            it.playWhenReady = playing
         }
     }
 
     /**
      * Play/Pause media
      */
-    fun playPauseVideo(): Boolean {
-        if (exoPlayer != null) {
-            if (exoPlayer!!.playWhenReady) {
-                playWhenReady = false
-                audioHelper?.stopRequestAudio()
-            } else {
-                playWhenReady = true
-                audioHelper?.requestAudio()
+    open fun onPlayPauseMedia() {
+        player?.let {
+            if (it.playbackState == ExoPlayer.STATE_ENDED) {
+                playbackPosition = 0L
+                player?.seekTo(playbackPosition)
             }
-            exoPlayer!!.playWhenReady = playWhenReady
+            if (!it.isPlaying) {
+                audioHelper.requestAudio()
+            } else {
+                audioHelper.stopRequestAudio()
+            }
+            it.playWhenReady = !it.isPlaying
         }
-        return playWhenReady
     }
 
     /**
      * Seek media to miliseconds
      */
-    fun seekTo(time: Int) {
-        if (exoPlayer != null) {
-            exoPlayer!!.seekTo(time.toLong())
+    open fun seekTo(time: Long) {
+        playbackPosition = time
+        player?.seekTo(playbackPosition)
+    }
+
+    open fun changeVolume(volume: Float) {
+        this.volume = volume
+        player?.volume = volume
+    }
+    // endregion
+
+    // region lifecycle methods
+    open fun start() {
+        if (Util.SDK_INT > 23) {
+            initializePlayer()
         }
     }
 
-    /**
-     * Resume play media
-     */
-    fun resumeVideo(): Boolean {
-        if (exoPlayer != null) {
-            exoPlayer!!.seekTo(playbackPosition)
-            if (isPlaying) {
-                audioHelper?.requestAudio()
-            }
-            exoPlayer!!.playWhenReady = isPlaying
+    open fun resume() {
+        if ((Util.SDK_INT <= 23 || player == null)) {
+            initializePlayer()
         }
+    }
+
+    open fun pause() {
+        if (Util.SDK_INT <= 23) {
+            releasePlayer()
+        }
+    }
+
+    open fun stop() {
+        if (Util.SDK_INT > 23) {
+            releasePlayer()
+        }
+    }
+    // endregion
+
+    // region private methods
+    private fun initializePlayer() {
+        if (mediaItem == null) return
+        player = ExoPlayer.Builder(playerView.context)
+            .build()
+            .also { exoPlayer ->
+                playerView.player = exoPlayer
+                exoPlayer.setMediaItem(mediaItem!!)
+                exoPlayer.addListener(playbackStateListener)
+                exoPlayer.playWhenReady = playWhenReady
+                exoPlayer.repeatMode =
+                    if (!enableRepeat) Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ALL
+                exoPlayer.volume = volume
+                exoPlayer.seekTo(currentItem, playbackPosition)
+                audioHelper.requestAudio()
+                exoPlayer.prepare()
+            }
         handler.post(mRunnable)
-        return isPlaying
-    }
-
-    /**
-     * Pause media
-     */
-    fun pauseVideo() {
-        if (exoPlayer != null) {
-            isPlaying = exoPlayer!!.playWhenReady
-            playbackPosition = exoPlayer!!.currentPosition
-            exoPlayer!!.playWhenReady = false
-            audioHelper?.stopRequestAudio()
-        }
-        handler.removeCallbacks(mRunnable)
-    }
-
-    /**
-     * Start handle current time media playing
-     */
-    fun startHandler() {
-        handler.removeCallbacks(mRunnable)
-        handler.post(mRunnable)
-    }
-
-    /**
-     * Stop handle time media playing
-     */
-    fun stopHandler() {
-        handler.removeCallbacks(mRunnable)
-    }
-
-    /**
-     * Init media player
-     */
-    fun initializeRemotePlayer(url: String/*, user: String*/) {
-        exoPlayer = ExoPlayer.Builder(playerView.context).build()
-        exoPlayer!!.repeatMode = Player.REPEAT_MODE_ALL
-        exoPlayer!!.addListener(playerListener)
-
-        playerView.player = exoPlayer
-        val mediaItem = MediaItem.fromUri(Uri.parse(url))
-        exoPlayer!!.setMediaItem(mediaItem)
-        audioHelper?.requestAudio()
-        exoPlayer!!.playWhenReady = true
-        exoPlayer!!.seekTo(currentMediaItemIndex, playbackPosition)
-        exoPlayer!!.prepare()
-    }
-
-    fun initializeLocalPlayer(videoUrl: String, audioUrl: String) {
-        exoPlayer = ExoPlayer.Builder(playerView.context).build().apply {
-            repeatMode = Player.REPEAT_MODE_ALL
-            addListener(playerListener)
-            if (audioUrl.isEmpty()) {
-                val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
-                setMediaItem(mediaItem)
-            } else {
-                val dataSourceFactory = DefaultDataSource.Factory(playerView.context)
-                val videoSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)))
-                val audioSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
-                val mediaItem = MergingMediaSource(videoSource, audioSource)
-                setMediaSource(mediaItem)
-            }
-
-            playbackPosition = 0
-            playWhenReady = true
-            volume = if (mute) {
-                0f
-            } else {
-                audioHelper?.requestAudio()
-                this.volume
-            }
-            seekTo(currentMediaItemIndex, playbackPosition)
-            prepare()
-        }
-        playerView.player = exoPlayer
-    }
-
-    fun initializeRemotePlayer(videoUrl: String, audioUrl: String) {
-        exoPlayer = ExoPlayer.Builder(playerView.context).build().apply {
-            repeatMode = Player.REPEAT_MODE_ALL
-            addListener(playerListener)
-            val videoSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
-                .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)))
-
-            val mediaItem = if (audioUrl.isEmpty()) {
-                MergingMediaSource(videoSource)
-            } else {
-                val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
-                    .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
-                MergingMediaSource(videoSource, audioSource)
-            }
-            setMediaSource(mediaItem)
-            playbackPosition = 0
-            playWhenReady = true
-            volume = if (mute) {
-                0f
-            } else {
-                audioHelper?.requestAudio()
-                this.volume
-            }
-            seekTo(currentMediaItemIndex, playbackPosition)
-            prepare()
-        }
-        playerView.player = exoPlayer
-    }
-
-    fun changeMediaSource(videoUrl: String, audioUrl: String, preview: Boolean = false) {
-        if (exoPlayer == null) {
-            initializeRemotePlayer(videoUrl, audioUrl)
-        } else {
-            val videoSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
-                .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)))
-            val mediaItem = if (audioUrl.isEmpty()) {
-                MergingMediaSource(videoSource)
-            } else {
-                val audioSource = ProgressiveMediaSource.Factory(DefaultHttpDataSource.Factory())
-                    .createMediaSource(MediaItem.fromUri(Uri.parse(audioUrl)))
-                MergingMediaSource(videoSource, audioSource)
-            }
-            exoPlayer?.let {
-                it.playWhenReady = false
-                it.setMediaSource(mediaItem)
-                it.playWhenReady = true
-                it.volume = if (mute) {
-                    0f
-                } else {
-                    audioHelper?.requestAudio()
-                    this.volume
-                }
-                it.prepare()
-            }
-        }
     }
 
 
     /**
      * Release media player
      */
-    fun killPlayer() {
-        if (exoPlayer != null) {
-            playbackPosition = exoPlayer!!.currentPosition
-            currentMediaItemIndex = exoPlayer!!.currentMediaItemIndex
-            playWhenReady = exoPlayer!!.playWhenReady
-            exoPlayer!!.release()
-            exoPlayer = null
-            mediaSource = null
-            playerView.player = null
+    private fun releasePlayer() {
+        audioHelper.stopRequestAudio()
+        handler.removeCallbacks(mRunnable)
+        player?.let { exoPlayer ->
+            playbackPosition = exoPlayer.currentPosition
+            currentItem = exoPlayer.currentMediaItemIndex
+            playWhenReady = exoPlayer.playWhenReady
+            exoPlayer.removeListener(playbackStateListener)
+            exoPlayer.release()
+        }
+        player = null
+    }
+
+    private fun playbackStateListener() = object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (playbackState == ExoPlayer.STATE_READY) {
+                listener?.getDurationMedia(player?.duration ?: 0L)
+            }
+            listener?.onPlaybackStateChanged(playbackState)
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            listener?.onIsPlayingChanged(isPlaying)
+        }
+
+        override fun onPlayerError(error: PlaybackException) {
+            listener?.onPlayerError(error)
         }
     }
-
-    fun changeStatePlay(play: Boolean) {
-        exoPlayer?.playWhenReady = play
-    }
-
-    fun changeVolume(volume: Float) {
-        this.volume = volume
-        exoPlayer?.volume = if (mute) 0f else volume
-    }
-
-    fun muteMedia(mute: Boolean) {
-        this.mute = mute
-        exoPlayer?.volume = if (mute) 0f else this.volume
-    }
+    // endregion
 }
