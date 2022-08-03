@@ -37,7 +37,6 @@ open class ExoPlayerHelper(
     // region Const and Fields
 
     interface IExoPlayerCallback {
-        fun onAudioLoss(onLoss: Boolean)
         fun getDurationMedia(duration: Long)
         fun onPlaybackPositionChanged(position: Long)
         fun onPlaybackStateChanged(playbackState: Int)
@@ -45,8 +44,11 @@ open class ExoPlayerHelper(
         fun onPlayerError(error: PlaybackException)
     }
 
-    private var audioHelper: AudioHelper
     private val playbackStateListener: Player.Listener = playbackStateListener()
+    private val audioFocusListener: AudioFocusUtility.MediaControlListener = audioFocusListener()
+    private val audioHelper: AudioFocusUtility by lazy {
+        AudioFocusUtility(playerView.context, audioFocusListener)
+    }
     var listener: IExoPlayerCallback? = null
     private var mediaItem: MediaItem? = null
     private var player: ExoPlayer? = null
@@ -64,12 +66,6 @@ open class ExoPlayerHelper(
                 listener?.onPlaybackPositionChanged(current)
                 handler.postDelayed(this, delay)
             }
-        }
-    }
-
-    init {
-        audioHelper = AudioHelper(playerView.context) {
-            listener?.onAudioLoss(it)
         }
     }
 
@@ -94,13 +90,10 @@ open class ExoPlayerHelper(
     }
 
     open fun changeStatePlayer(playing: Boolean) {
-        player?.let {
-            if (playing) {
-                audioHelper.requestAudio()
-            } else {
-                audioHelper.stopRequestAudio()
-            }
-            it.playWhenReady = playing
+        if (playing) {
+            audioHelper.tryPlayback()
+        } else {
+            player?.playWhenReady = false
         }
     }
 
@@ -114,11 +107,10 @@ open class ExoPlayerHelper(
                 player?.seekTo(playbackPosition)
             }
             if (!it.isPlaying) {
-                audioHelper.requestAudio()
+                audioHelper.tryPlayback()
             } else {
-                audioHelper.stopRequestAudio()
+                it.playWhenReady = false
             }
-            it.playWhenReady = !it.isPlaying
         }
     }
 
@@ -176,7 +168,9 @@ open class ExoPlayerHelper(
                     if (!enableRepeat) Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ALL
                 exoPlayer.volume = volume
                 exoPlayer.seekTo(currentItem, playbackPosition)
-                audioHelper.requestAudio()
+                if (playWhenReady) {
+                    audioHelper.tryPlayback()
+                }
                 exoPlayer.prepare()
             }
         handler.post(mRunnable)
@@ -187,7 +181,7 @@ open class ExoPlayerHelper(
      * Release media player
      */
     private fun releasePlayer() {
-        audioHelper.stopRequestAudio()
+        audioHelper.finishPlayback()
         handler.removeCallbacks(mRunnable)
         player?.let { exoPlayer ->
             playbackPosition = exoPlayer.currentPosition
@@ -213,6 +207,20 @@ open class ExoPlayerHelper(
 
         override fun onPlayerError(error: PlaybackException) {
             listener?.onPlayerError(error)
+        }
+    }
+
+    private fun audioFocusListener() = object : AudioFocusUtility.MediaControlListener {
+        override fun onPlayMedia() {
+            player?.playWhenReady = true
+        }
+
+        override fun onPauseMedia() {
+            player?.playWhenReady = false
+        }
+
+        override fun onStopMedia() {
+            player?.playWhenReady = false
         }
     }
     // endregion
