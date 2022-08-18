@@ -3,6 +3,9 @@ package com.baseandroid.baselibrary.utils
 import android.content.Context
 import android.content.res.Resources
 import android.util.TypedValue
+import android.view.WindowManager
+import com.baseandroid.baselibrary.utils.extension.buildVersion
+import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
 val Number.toPixel
     get() = TypedValue.applyDimension(
@@ -27,7 +30,19 @@ fun hasNotch(context: Context): Boolean {
 }
 
 val Context.screenWidth: Int
-    get() = resources.displayMetrics.widthPixels
+    get() {
+        return if (isBuildLargerThan(buildVersion.R)) {
+            getSystemService(WindowManager::class.java).currentWindowMetrics.bounds.width()
+        } else {
+            Resources.getSystem().displayMetrics.widthPixels
+        }
+    }
 
 val Context.screenHeight: Int
-    get() = resources.displayMetrics.heightPixels
+    get() {
+        return if (isBuildLargerThan(buildVersion.R)) {
+            getSystemService(WindowManager::class.java).currentWindowMetrics.bounds.height()
+        } else {
+            Resources.getSystem().displayMetrics.heightPixels
+        }
+    }

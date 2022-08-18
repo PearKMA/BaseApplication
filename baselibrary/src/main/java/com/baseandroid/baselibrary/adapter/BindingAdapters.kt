@@ -5,10 +5,7 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.BindingAdapter
 import com.baseandroid.baselibrary.utils.NotchUtils.getInternalDimensionSize
-import com.baseandroid.baselibrary.utils.extension.NAVIGATION_BAR_HEIGHT
-import com.baseandroid.baselibrary.utils.extension.buildVersion
-import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
-import com.baseandroid.baselibrary.utils.extension.onDebounceClick
+import com.baseandroid.baselibrary.utils.extension.*
 
 
 private const val DEBOUNCE_CLICK_INTERVAL = 350L
@@ -66,15 +63,19 @@ fun View.setMarginTop(space: Float) {
             }*/
             windowInsets
         }
-    }
-    /*if (this.layoutParams is ConstraintLayout.LayoutParams) {
+    } else if (this.layoutParams is ConstraintLayout.LayoutParams) {
         val params = this.layoutParams as ConstraintLayout.LayoutParams
         val statusBarHeight = this.context.getInternalDimensionSize(
             STATUS_BAR_HEIGHT
         )
-        val actionBarSize = statusBarHeight + space
-        params.setMargins(0, actionBarSize.toInt(), 0, 0)
-    }*/
+
+        if (isBuildLargerThan(buildVersion.R) && statusBarHeight > 0) {
+            val actionBarSize = statusBarHeight + space
+            params.setMargins(0, actionBarSize.toInt(), 0, 0)
+        } else {
+            params.setMargins(0, space.toInt(), 0, 0)
+        }
+    }
 }
 
 @BindingAdapter("marginBottom")
