@@ -1,7 +1,9 @@
 package com.baseandroid.baselibrary.activity
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
@@ -71,6 +73,13 @@ abstract class BaseActivity<BD : ViewDataBinding> : AppCompatActivity() {
         }
         if (!enableDarkMode()) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         initViews(savedInstanceState)
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        val newOverrideConfiguration = Configuration(newBase?.resources?.configuration)
+            .apply { fontScale = 1.0f }
+        applyOverrideConfiguration(newOverrideConfiguration)
+        super.attachBaseContext(newBase)
     }
     // endregion
 
