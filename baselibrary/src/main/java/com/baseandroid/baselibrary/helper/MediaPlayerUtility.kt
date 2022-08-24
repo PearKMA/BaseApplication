@@ -5,9 +5,14 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.google.android.exoplayer2.util.Util
+import java.io.IOException
 
-open class MediaPlayerUtility(context: Context, private val mediaListener: IMediaPlayerListener) :
+open class MediaPlayerUtility(
+    private val context: Context,
+    private val mediaListener: IMediaPlayerListener
+) :
     AudioFocusUtility.MediaControlListener {
     // region Const and Fields
     private val audioFocusUtility by lazy {
@@ -15,6 +20,8 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
     }
 
     private var player: MediaPlayer? = null
+    private var speed = 1.0f
+    private var fromAssets = false
     private var mediaUrl = ""
     private var isMediaOpened = false
     private var playbackPosition = 0
@@ -37,6 +44,15 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
     // region controller
     open fun getPlayer() = player
 
+    open fun setSpeed(speed: Float) {
+        this.speed = speed
+        if (player != null) {
+            playWhenReady = player!!.isPlaying
+            onStopMedia()
+            player!!.prepareSource()
+        }
+    }
+
     open fun setDelayHandlePosition(time: Long) {
         delay = time
     }
@@ -45,15 +61,19 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
         enableRepeat = enable
     }
 
-    open fun setMedia(mediaUrl: String) {
+    open fun setPlayFromAssets(fromAssets: Boolean) {
+        this.fromAssets = fromAssets
+    }
+
+    open fun setMedia(mediaUrl: String, playWhenReady: Boolean = false) {
         this.mediaUrl = mediaUrl
+        this.playWhenReady = playWhenReady
         if (player == null) {
             initializePlayer()
         } else {
             onStopMedia()
             player?.apply {
-                setDataSource(mediaUrl)
-                prepareAsync()
+                prepareSource()
             }
         }
     }
@@ -109,6 +129,14 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
             releasePlayer()
         }
     }
+
+    open fun onCreate() {
+        initializePlayer()
+    }
+
+    open fun onDestroy() {
+        releasePlayer()
+    }
     // endregion
 
     // region override
@@ -117,9 +145,9 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
             if (isMediaOpened) {
                 start()
             } else {
+                Log.d("Hunglv", "MediaPlayerUtility - onPlayMedia: ")
                 playWhenReady = true
-                setDataSource(mediaUrl)
-                prepareAsync()
+                prepareSource()
             }
         }
 
@@ -149,7 +177,6 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
 
     // region private methods
     private fun initializePlayer() {
-        if (mediaUrl.isEmpty()) return
         mediaListener.onPlaybackStateChanged(PlaybackState.IDLE)
         isMediaOpened = false
         player = MediaPlayer().apply {
@@ -159,11 +186,15 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
             )
             setOnPreparedListener {
                 it.seekTo(playbackPosition)
-                if (playWhenReady) {
-                    audioFocusUtility.tryPlayback()
-                    playWhenReady = false
-                }
+
                 isMediaOpened = true
+                if (playWhenReady) {
+                    playWhenReady = false
+                    val params = it.playbackParams
+                    params.speed = speed
+                    it.playbackParams = params
+                    audioFocusUtility.tryPlayback()
+                }
                 mediaListener.getDurationMedia(it.duration.toLong())
                 mediaListener.onPlaybackStateChanged(PlaybackState.READY)
             }
@@ -181,9 +212,7 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
                 mediaListener.onPlayerError(w, c)
                 true
             }
-
-            setDataSource(mediaUrl)
-            prepareAsync()
+            prepareSource()
         }
         handler.post(mRunnable)
     }
@@ -207,6 +236,21 @@ open class MediaPlayerUtility(context: Context, private val mediaListener: IMedi
         player = null
     }
 
+    private fun MediaPlayer.prepareSource() {
+        if (mediaUrl.isEmpty()) return
+        if (!fromAssets) {
+            setDataSource(mediaUrl)
+            prepareAsync()
+        } else {
+            try {
+                val afd = context.assets?.openFd(mediaUrl) ?: return
+                setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                afd.close()
+                prepareAsync()
+            } catch (e: IOException) {
+            }
+        }
+    }
     // endregion
 
     interface IMediaPlayerListener {
