@@ -5,7 +5,6 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.google.android.exoplayer2.util.Util
 import java.io.IOException
 
@@ -145,7 +144,6 @@ open class MediaPlayerUtility(
             if (isMediaOpened) {
                 start()
             } else {
-                Log.d("Hunglv", "MediaPlayerUtility - onPlayMedia: ")
                 playWhenReady = true
                 prepareSource()
             }

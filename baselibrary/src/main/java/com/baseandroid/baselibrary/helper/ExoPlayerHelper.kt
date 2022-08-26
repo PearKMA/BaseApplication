@@ -1,5 +1,6 @@
 package com.baseandroid.baselibrary.helper
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.google.android.exoplayer2.ExoPlayer
@@ -31,7 +32,8 @@ import com.google.android.exoplayer2.util.Util
  */
 
 open class ExoPlayerHelper(
-    private val playerView: StyledPlayerView,
+    private val playerView: StyledPlayerView?,
+    private val context: Context,
     delay: Long = 1000
 ) {
     // region Const and Fields
@@ -47,7 +49,7 @@ open class ExoPlayerHelper(
     private val playbackStateListener: Player.Listener = playbackStateListener()
     private val audioFocusListener: AudioFocusUtility.MediaControlListener = audioFocusListener()
     private val audioHelper: AudioFocusUtility by lazy {
-        AudioFocusUtility(playerView.context, audioFocusListener)
+        AudioFocusUtility(context, audioFocusListener)
     }
     var listener: IExoPlayerCallback? = null
     private var mediaItem: MediaItem? = null
@@ -74,6 +76,10 @@ open class ExoPlayerHelper(
     // region controller
     open fun getPlayer() = player
 
+    open fun setSpeed(speed: Float) {
+        player?.setPlaybackSpeed(speed)
+    }
+
     open fun enableRepeat(enable: Boolean) {
         enableRepeat = enable
         player?.repeatMode = if (!enable) Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ALL
@@ -81,12 +87,10 @@ open class ExoPlayerHelper(
 
     open fun setMedia(media: MediaItem) {
         mediaItem = media
-    }
-
-    open fun changeMedia(media: MediaItem) {
-        mediaItem = media
-        player?.setMediaItem(mediaItem!!, true)
-        player?.prepare()
+        if (player != null) {
+            player?.setMediaItem(mediaItem!!, true)
+            player?.prepare()
+        }
     }
 
     open fun changeStatePlayer(playing: Boolean) {
@@ -129,49 +133,63 @@ open class ExoPlayerHelper(
     // endregion
 
     // region lifecycle methods
-    open fun start() {
+    open fun onStart() {
         if (Util.SDK_INT > 23) {
             initializePlayer()
+            playerView?.onResume()
         }
     }
 
-    open fun resume() {
+    open fun onResume() {
         if ((Util.SDK_INT <= 23 || player == null)) {
             initializePlayer()
+            playerView?.onResume()
         }
     }
 
-    open fun pause() {
+    open fun onPause() {
         if (Util.SDK_INT <= 23) {
+            playerView?.onPause()
             releasePlayer()
         }
     }
 
-    open fun stop() {
+    open fun onStop() {
         if (Util.SDK_INT > 23) {
+            playerView?.onPause()
             releasePlayer()
         }
+    }
+
+    open fun onCreate() {
+        initializePlayer()
+    }
+
+    open fun onDestroy() {
+        releasePlayer()
     }
     // endregion
 
     // region private methods
     private fun initializePlayer() {
-        if (mediaItem == null) return
-        player = ExoPlayer.Builder(playerView.context)
+        player = ExoPlayer.Builder(context)
             .build()
             .also { exoPlayer ->
-                playerView.player = exoPlayer
-                exoPlayer.setMediaItem(mediaItem!!)
+                playerView?.player = exoPlayer
                 exoPlayer.addListener(playbackStateListener)
                 exoPlayer.playWhenReady = playWhenReady
                 exoPlayer.repeatMode =
                     if (!enableRepeat) Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ALL
                 exoPlayer.volume = volume
                 exoPlayer.seekTo(currentItem, playbackPosition)
-                if (playWhenReady) {
-                    audioHelper.tryPlayback()
+
+                if (mediaItem != null) {
+                    exoPlayer.setMediaItem(mediaItem!!)
+                    if (playWhenReady) {
+                        audioHelper.tryPlayback()
+                    }
+                    exoPlayer.prepare()
                 }
-                exoPlayer.prepare()
             }
         handler.post(mRunnable)
     }
