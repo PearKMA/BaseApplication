@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
+import androidx.core.net.toUri
 import com.google.android.exoplayer2.util.Util
 import java.io.IOException
 
@@ -22,6 +23,7 @@ open class MediaPlayerUtility(
     private var speed = 1.0f
     private var fromAssets = false
     private var mediaUrl = ""
+    private var typeUri = false
     private var isMediaOpened = false
     private var playbackPosition = 0
     private var playWhenReady = false
@@ -62,6 +64,10 @@ open class MediaPlayerUtility(
 
     open fun setPlayFromAssets(fromAssets: Boolean) {
         this.fromAssets = fromAssets
+    }
+
+    open fun setTypeUri(isUri: Boolean) {
+        typeUri = isUri
     }
 
     open fun setMedia(mediaUrl: String, playWhenReady: Boolean = false) {
@@ -161,7 +167,7 @@ open class MediaPlayerUtility(
 
     override fun onStopMedia() {
         player?.apply {
-            if (isMediaOpened) {
+            if (isMediaOpened || isPlaying) {
                 stop()
             }
             audioFocusUtility.finishPlayback()
@@ -237,7 +243,11 @@ open class MediaPlayerUtility(
     private fun MediaPlayer.prepareSource() {
         if (mediaUrl.isEmpty()) return
         if (!fromAssets) {
-            setDataSource(mediaUrl)
+            if (!typeUri) {
+                setDataSource(mediaUrl)
+            } else {
+                setDataSource(context, mediaUrl.toUri())
+            }
             prepareAsync()
         } else {
             try {

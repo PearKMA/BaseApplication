@@ -2,8 +2,6 @@ package com.baseandroid.baselibrary.widgets.swipe_reveal
 
 import android.os.Bundle
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 
 class ViewBinderHelper {
@@ -143,6 +141,17 @@ class ViewBinderHelper {
         }
     }
 
+    fun closeAll() {
+        synchronized(stateChangeLock) {
+            for (entry in mapStates.entries) {
+                entry.setValue(SwipeRevealLayout.STATE_CLOSE)
+            }
+            for (layout in mapLayouts.values) {
+                layout.close(true)
+            }
+        }
+    }
+
     /**
      * Close others swipe layout.
      * @param id layout which bind with this data object id will be excluded.
@@ -169,7 +178,7 @@ class ViewBinderHelper {
     private fun setLockSwipe(lock: Boolean, id: Array<out String?>?) {
         if (id == null || id.isEmpty()) return
         if (lock) lockedSwipeSet.addAll(id.toList()) else lockedSwipeSet.removeAll(
-            id.toList()
+            id.toList().toSet()
         )
         for (s in id) {
             val layout = mapLayouts[s]
