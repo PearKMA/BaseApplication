@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.RequiresApi
 import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 import java.util.concurrent.TimeUnit
 
@@ -63,16 +64,8 @@ class AudioFocusUtility(context: Context, private val listener: MediaControlList
         }
     }
 
-    private val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).run {
-        setAudioAttributes(AudioAttributes.Builder().run {
-            setUsage(AudioAttributes.USAGE_MEDIA)
-            setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-            build()
-        })
-        setAcceptsDelayedFocusGain(true)
-        setOnAudioFocusChangeListener(afChangeListener, handler)
-        build()
-    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private var focusRequest: AudioFocusRequest? = null
 
     // endregion
 
@@ -84,7 +77,19 @@ class AudioFocusUtility(context: Context, private val listener: MediaControlList
         }
         if (isBuildLargerThan(Build.VERSION_CODES.O)) {
             // requesting audio focus and processing the response
-            val res = audioManager.requestAudioFocus(focusRequest)
+            if (null == focusRequest) {
+                focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).run {
+                    setAudioAttributes(AudioAttributes.Builder().run {
+                        setUsage(AudioAttributes.USAGE_MEDIA)
+                        setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        build()
+                    })
+                    setAcceptsDelayedFocusGain(true)
+                    setOnAudioFocusChangeListener(afChangeListener, handler)
+                    build()
+                }
+            }
+            val res = audioManager.requestAudioFocus(focusRequest!!)
             synchronized(focusLock) {
                 playbackNowAuthorized = when (res) {
                     AudioManager.AUDIOFOCUS_REQUEST_FAILED -> false
@@ -120,7 +125,9 @@ class AudioFocusUtility(context: Context, private val listener: MediaControlList
     fun finishPlayback() {
         isRequested = false
         if (isBuildLargerThan(Build.VERSION_CODES.O)) {
-            audioManager.abandonAudioFocusRequest(focusRequest)
+            if (null != focusRequest) {
+                audioManager.abandonAudioFocusRequest(focusRequest!!)
+            }
         } else {
             @Suppress("DEPRECATION")
             audioManager.abandonAudioFocus(afChangeListener)

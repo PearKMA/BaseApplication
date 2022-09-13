@@ -9,6 +9,7 @@ import com.baseandroid.baselibrary.fragment.TypeScreen
 
 interface IFullScreenListener {
     fun onClose()
+    fun onGifView()
 }
 
 class FragmentFullScreen : BaseFragment<FragmentFullScreenBinding>(), IFullScreenListener {
@@ -29,6 +30,9 @@ class FragmentFullScreen : BaseFragment<FragmentFullScreenBinding>(), IFullScree
 
     override fun initViews(savedInstanceState: Bundle?) {
         binding.listener = this
+
+        binding.ivGif.setPlayWhenReady(false)
+        binding.ivGif.setGIFResource(R.raw.gif_scissor_1)
     }
 
     override fun typeScreen(): TypeScreen {
@@ -42,5 +46,10 @@ class FragmentFullScreen : BaseFragment<FragmentFullScreenBinding>(), IFullScree
     override fun onClose() {
         onNavigateUp()
     }
+
+    override fun onGifView() {
+        binding.ivGif.changeStatePlay(!binding.ivGif.isPlaying)
+    }
+
     // endregion
 }

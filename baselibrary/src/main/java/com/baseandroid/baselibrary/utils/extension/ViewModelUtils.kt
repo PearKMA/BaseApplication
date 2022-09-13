@@ -1,5 +1,7 @@
 package com.baseandroid.baselibrary.utils.extension
 
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -8,10 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
-
-fun <T> LifecycleOwner.observer(liveData: LiveData<T>?, onDataChange: (T?) -> Unit) {
-    liveData?.observe(this, Observer(onDataChange))
-}
 
 inline fun <T> MutableStateFlow<T>.update(function: (T) -> T) {
     while (true) {
@@ -24,7 +22,7 @@ inline fun <T> MutableStateFlow<T>.update(function: (T) -> T) {
 }
 
 // require lifecycle runtime
-fun <T> LifecycleOwner.collectWhenStarted(
+fun <T> Fragment.collectWhenStarted(
     flow: Flow<T>,
     firstTimeDelay: Long = 0L,
     action: suspend (value: T) -> Unit
@@ -36,7 +34,31 @@ fun <T> LifecycleOwner.collectWhenStarted(
     }
 }
 
-fun LifecycleOwner.collectWhenStarted(
+fun <T> AppCompatActivity.collectWhenStarted(
+    flow: Flow<T>,
+    firstTimeDelay: Long = 0L,
+    action: suspend (value: T) -> Unit
+) {
+    lifecycleScope.launch {
+        delay(firstTimeDelay)
+        flow.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .collect(action)
+    }
+}
+
+fun Fragment.collectWhenStarted(
+    firstTimeDelay: Long = 0L,
+    action: (scope: CoroutineScope) -> Unit
+) {
+    viewLifecycleOwner.lifecycleScope.launch {
+        delay(firstTimeDelay)
+        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            action(this)
+        }
+    }
+}
+
+fun AppCompatActivity.collectWhenStarted(
     firstTimeDelay: Long = 0L,
     action: (scope: CoroutineScope) -> Unit
 ) {
@@ -64,14 +86,6 @@ fun <T> Flow<Event<T?>>.onEachEvent(action: suspend (T) -> Unit): Flow<T> = tran
     }
 }
 
-
-inline fun <T> LifecycleOwner.singleObserver(
-    liveData: LiveData<Event<T>>?,
-    crossinline onDataChange: (T?) -> Unit
-) {
-    observer(liveData) { it?.getContentIfNotHandled()?.let(onDataChange) }
-}
-
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.
  */
@@ -97,7 +111,3 @@ open class Event<out T>(private val content: T) {
      */
     fun peekContent(): T = content
 }
-
-
-
-

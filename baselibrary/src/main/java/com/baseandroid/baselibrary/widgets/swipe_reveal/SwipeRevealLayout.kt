@@ -656,15 +656,15 @@ class SwipeRevealLayout : ViewGroup {
     private val mGestureListener = object : GestureDetector.SimpleOnGestureListener() {
         var hasDisallowed = false
 
-        override fun onDown(e: MotionEvent?): Boolean {
+        override fun onDown(e: MotionEvent): Boolean {
             mIsScrolling = false
             hasDisallowed = false
             return true
         }
 
         override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent?,
+            e1: MotionEvent,
+            e2: MotionEvent,
             velocityX: Float,
             velocityY: Float
         ): Boolean {
@@ -673,8 +673,8 @@ class SwipeRevealLayout : ViewGroup {
         }
 
         override fun onScroll(
-            e1: MotionEvent?,
-            e2: MotionEvent?,
+            e1: MotionEvent,
+            e2: MotionEvent,
             distanceX: Float,
             distanceY: Float
         ): Boolean {

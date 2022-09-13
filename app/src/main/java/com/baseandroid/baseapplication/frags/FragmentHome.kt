@@ -6,12 +6,12 @@ import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.graphics.*
 import android.graphics.drawable.GradientDrawable
+import android.os.Bundle
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.baseandroid.baseapplication.R
 import com.baseandroid.baseapplication.databinding.FragmentHomeBinding
 import com.baseandroid.baselibrary.fragment.BaseFragment
 import com.baseandroid.baselibrary.fragment.TypeScreen
-import com.baseandroid.baselibrary.utils.checkPermissions
 
 interface HomeListener {
     fun onNext()
@@ -45,13 +45,17 @@ class FragmentHome : BaseFragment<FragmentHomeBinding>(), HomeListener {
     override fun onNext() {
         needReload = true
 
-        checkPermissions(
-            listPermissions,
-            R.string.text_title,
-            R.string.text_content
-        ) {
-            onNavigate(R.id.action_fragmentHome_to_fragmentFullScreen)
-        }
+//        checkPermissions(
+//            listPermissions,
+//            R.string.text_title,
+//            R.string.text_content
+//        ) {
+        onNavigate(R.id.action_fragmentHome_to_fragmentFullScreen)
+//        }
+    }
+
+    override fun initViews(savedInstanceState: Bundle?) {
+        binding.listener = this
     }
 
     override fun handleBackPressed() {

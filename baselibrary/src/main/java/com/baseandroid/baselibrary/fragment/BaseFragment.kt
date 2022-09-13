@@ -104,7 +104,7 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     // region abstract function
     @LayoutRes
     abstract fun getLayoutId(): Int
-    
+
     abstract fun getViewId(): Int
     // endregion
 
@@ -122,8 +122,6 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
     open fun getStatusBarColor(): Int = Color.TRANSPARENT
 
     open fun initPause() {}
-
-    open fun preventBackPress(): Boolean = false
 
     open fun onActivityReturned(result: ActivityResult) {}
 
@@ -183,15 +181,13 @@ abstract class BaseFragment<BD : ViewDataBinding> : Fragment() {
 
     // region private function
     private fun initBackPress() {
-        if (!preventBackPress()) { // block device's back button
-            requireActivity().onBackPressedDispatcher.addCallback(
-                viewLifecycleOwner,
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        handleBackPressed()
-                    }
-                })
-        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    handleBackPressed()
+                }
+            })
     }
 
     /**

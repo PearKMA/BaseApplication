@@ -12,8 +12,11 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
     private val gestureDetector = GestureDetector(context, GestureListener())
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        return gestureDetector.onTouchEvent(event)
+    override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
+        if (p1 != null) {
+            return gestureDetector.onTouchEvent(p1)
+        }
+        return false
     }
 
     open fun onSwipeLeftToRight() {}
@@ -29,26 +32,22 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
     }
 
     private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
-        override fun onDown(e: MotionEvent?): Boolean {
+        override fun onDown(e: MotionEvent): Boolean {
             return true
         }
 
-        override fun onLongPress(e: MotionEvent?) {
-            if (null != e) {
-                onLongPress()
-            }
+        override fun onLongPress(e: MotionEvent) {
+            onLongPress()
         }
 
-        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-            if (null != e) {
-                onSingleTap()
-            }
+        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+            onSingleTap()
             return true
         }
 
         override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent?,
+            e1: MotionEvent,
+            e2: MotionEvent,
             velocityX: Float,
             velocityY: Float
         ): Boolean {
@@ -70,11 +69,11 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
             //  C => it's a DOWN swipe
             //  D => it's a LEFT swipe
             //
-            val x1 = e1?.x ?: 0f
-            val y1 = e1?.y ?: 0f
+            val x1 = e1.x
+            val y1 = e1.y
 
-            val x2 = e2?.x ?: 0f
-            val y2 = e2?.y ?: 0f
+            val x2 = e2.x
+            val y2 = e2.y
 
             val angle = getAngle(x1, y1, x2, y2)
 
