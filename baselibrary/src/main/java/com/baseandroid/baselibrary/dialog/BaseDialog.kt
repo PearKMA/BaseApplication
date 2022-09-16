@@ -60,15 +60,17 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
     @Suppress("DEPRECATION")
     override fun onStart() {
         super.onStart()
-        if (restore) {
-            restore = false
-            dialog?.window?.setWindowAnimations(
-                R.style.DialogAnimation_Restore
-            )
-        } else {
-            dialog?.window?.setWindowAnimations(
-                R.style.DialogAnimation
-            )
+        if (restoreAnimation()) {
+            if (restore) {
+                restore = false
+                dialog?.window?.setWindowAnimations(
+                    R.style.DialogAnimation_Restore
+                )
+            } else {
+                dialog?.window?.setWindowAnimations(
+                    R.style.DialogAnimation
+                )
+            }
         }
 
         if (fullScreen()) {
@@ -107,6 +109,8 @@ abstract class BaseDialog<BD : ViewDataBinding> : DialogFragment() {
     protected open fun cancelable(): Boolean = true
 
     protected open fun fullScreen() = false
+
+    protected open fun restoreAnimation() = false
 
     protected open fun initViews() {
 

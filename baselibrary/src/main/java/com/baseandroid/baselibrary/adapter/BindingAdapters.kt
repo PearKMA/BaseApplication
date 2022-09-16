@@ -80,7 +80,22 @@ fun View.setMarginTop(space: Float) {
 
 @BindingAdapter("marginBottom")
 fun View.setMarginBottom(space: Float) {
-    if (this.layoutParams is ConstraintLayout.LayoutParams) {
+    if (isBuildLargerThan(buildVersion.P)) {
+        this.setOnApplyWindowInsetsListener { _, windowInsets ->
+            val safeHeight = windowInsets.displayCutout?.safeInsetTop ?: 0
+            val actionBarSize = safeHeight + space
+
+            val params = this.layoutParams as ConstraintLayout.LayoutParams
+            params.setMargins(0, 0, 0, actionBarSize.toInt())
+
+            /*if (isBuildLargerThan(buildVersion.R)) {
+                WindowInsets.CONSUMED
+            } else {
+                windowInsets.consumeDisplayCutout()
+            }*/
+            windowInsets
+        }
+    } else if (this.layoutParams is ConstraintLayout.LayoutParams) {
         val params = this.layoutParams as ConstraintLayout.LayoutParams
         val navigationBarHeight = this.context.getInternalDimensionSize(
             NAVIGATION_BAR_HEIGHT

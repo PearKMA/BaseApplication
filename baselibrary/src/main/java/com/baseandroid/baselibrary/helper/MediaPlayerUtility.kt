@@ -50,7 +50,7 @@ open class MediaPlayerUtility(
         if (player != null) {
             playWhenReady = player!!.isPlaying
             onStopMedia()
-            player!!.prepareSource()
+            player?.prepareSource()
         }
     }
 
@@ -77,9 +77,7 @@ open class MediaPlayerUtility(
             initializePlayer()
         } else {
             onStopMedia()
-            player?.apply {
-                prepareSource()
-            }
+            player?.prepareSource()
         }
     }
 

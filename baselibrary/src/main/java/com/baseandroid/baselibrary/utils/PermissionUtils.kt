@@ -13,6 +13,12 @@ import androidx.core.content.ContextCompat
 import com.baseandroid.baselibrary.fragment.BaseFragment
 import com.baseandroid.baselibrary.utils.extension.isBuildLargerThan
 
+fun Context.goToSettingsApplication() {
+    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        .setData(Uri.fromParts("package", packageName, null))
+    startActivity(intent)
+}
 
 fun showDialogPermission(context: Activity, title_id: Int, contentId: Int) {
     val dialogPermission: AlertDialog?
