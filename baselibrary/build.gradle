@@ -46,6 +46,7 @@ android {
         // Enable Coroutines
         freeCompilerArgs += Args.coroutines
     }
+    namespace 'com.baseandroid.baselibrary'
 }
 
 dependencies {

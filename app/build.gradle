@@ -54,6 +54,19 @@ android {
         // Enable Coroutines
         freeCompilerArgs += Args.coroutines
     }
+    namespace 'com.baseandroid.baseapplication'
+
+    /**
+     * Starting with AGP 7.3, all Android App Bundles built have Store Archival enabled by default.
+     * Archival is a new app bundle feature that in the future will allow users with low storage to
+     * effectively manage their app space, if supported by the store.
+     * To opt out of the generation of archived APKs:
+     * */
+    bundle {
+        storeArchive {
+            enable = false
+        }
+    }
 
     applicationVariants.all { variant ->
         variant.outputs.all {
