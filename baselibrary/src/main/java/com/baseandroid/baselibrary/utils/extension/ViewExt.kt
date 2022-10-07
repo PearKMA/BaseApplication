@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.SeekBar
 
 fun View.show() {
     this.visibility = View.VISIBLE
@@ -48,6 +49,22 @@ inline fun EditText.onInputTextChanged(crossinline listener: (String) -> Unit) {
         }
 
         override fun afterTextChanged(s: Editable?) {
+
+        }
+    })
+}
+
+inline fun SeekBar.onSeekBarChanged(crossinline listener: (Boolean, Int) -> Unit) {
+    this.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+            listener(p2, p1)
+        }
+
+        override fun onStartTrackingTouch(p0: SeekBar?) {
+
+        }
+
+        override fun onStopTrackingTouch(p0: SeekBar?) {
 
         }
     })

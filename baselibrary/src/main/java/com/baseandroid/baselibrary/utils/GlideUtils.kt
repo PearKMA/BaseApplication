@@ -6,8 +6,11 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
@@ -61,38 +64,21 @@ fun ImageView.loadRoundedCorner(
 }
 
 fun View.loadBackground(source: Any) {
-    this.post {
-        if (this.width > 0 && this.height > 0) {
-            Glide.with(this)
-                .asDrawable()
-                .load(source)
-                .override(this.width, this.height)
-                .into(object : CustomTarget<Drawable>() {
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        transition: Transition<in Drawable>?
-                    ) {
-                        this@loadBackground.background = resource
-                    }
+    Glide.with(this)
+        .load(source)
+        .apply(RequestOptions().format(DecodeFormat.PREFER_RGB_565))
+        .centerCrop()
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .skipMemoryCache(true)
+        .into(object : CustomTarget<Drawable>() {
+            override fun onResourceReady(
+                resource: Drawable,
+                transition: Transition<in Drawable>?
+            ) {
+                this@loadBackground.background = resource
+            }
 
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
-                })
-        } else {
-            Glide.with(this)
-                .asDrawable()
-                .load(source)
-                .into(object : CustomTarget<Drawable>() {
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        transition: Transition<in Drawable>?
-                    ) {
-                        this@loadBackground.background = resource
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
-                })
-        }
-    }
+            override fun onLoadCleared(placeholder: Drawable?) {
+            }
+        })
 }

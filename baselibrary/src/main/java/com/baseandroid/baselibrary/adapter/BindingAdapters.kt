@@ -1,11 +1,18 @@
 package com.baseandroid.baselibrary.adapter
 
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.BindingAdapter
 import com.baseandroid.baselibrary.utils.NotchUtils.getInternalDimensionSize
 import com.baseandroid.baselibrary.utils.extension.*
+import com.baseandroid.baselibrary.utils.loadBackground
+import com.baseandroid.baselibrary.utils.loadNormal
+import com.baseandroid.baselibrary.utils.loadRoundedCorner
 
 
 private const val DEBOUNCE_CLICK_INTERVAL = 350L
@@ -107,4 +114,49 @@ fun View.setMarginBottom(space: Float) {
             params.setMargins(0, 0, 0, space.toInt())
         }
     }
+}
+
+@BindingAdapter("loadBackground")
+fun View.loadImageAsBackground(source: Any?) {
+    source?.let {
+        loadBackground(it)
+    }
+}
+
+@BindingAdapter("loadRoundedImage", "cornerImage")
+fun ImageView.loadRoundedImage(source: Any?, corner: Float = 0f) {
+    source?.let {
+        if (corner > 0f)
+            loadRoundedCorner(it, corner.toInt())
+        else
+            loadNormal(it)
+    }
+}
+
+@BindingAdapter("loadCenterCrop")
+fun ImageView.loadCenterCrop(source: Any?) {
+    source?.let {
+        loadCenterCrop(source)
+    }
+}
+
+@BindingAdapter("tint")
+fun ImageView.setImageTint(color: String?) {
+    if (color != null) {
+        try {
+            setColorFilter(Color.parseColor(color))
+        } catch (e: NumberFormatException) {
+            clearColorFilter()
+        }
+    }
+}
+
+@BindingAdapter("textDrawableStart", "textDrawableTop", "textDrawableEnd", "textDrawableBottom")
+fun TextView.setTextDrawable(
+    drawStart: Drawable?,
+    drawTop: Drawable?,
+    drawEnd: Drawable?,
+    drawBottom: Drawable?
+) {
+    setCompoundDrawablesWithIntrinsicBounds(drawStart, drawTop, drawEnd, drawBottom)
 }

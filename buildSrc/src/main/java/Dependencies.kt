@@ -94,6 +94,18 @@ object Deps {
     // lottie
     const val lottie = "com.airbnb.android:lottie:${Versions.lottie}"
 
+    //camera X
+    const val camera2 = "androidx.camera:camera-camera2:${Versions.cameraXVersion}"
+    const val cameraLifecycle = "androidx.camera:camera-lifecycle:${Versions.cameraXVersion}"
+    const val cameraView = "androidx.camera:camera-view:${Versions.cameraXVersion}"
+
+    const val guava = "com.google.guava:guava:${Versions.guava}"
+
+    //flexbox
+    const val flexbox = "com.google.android.flexbox:flexbox:${Versions.flexbox}"
+
+    //leak memory (debugImplementation)
+    const val leakcanary = "com.squareup.leakcanary:leakcanary-android:${Versions.leakCanary}"
     // endregion
 
     // region testing
@@ -108,7 +120,9 @@ object Deps {
     const val espresso = "androidx.test.espresso:espresso-core:${Versions.espresso}"
     const val androidTruth = "com.google.truth:truth:${Versions.googleTruth}"
     const val coreTest = "androidx.arch.core:core-testing:${Versions.coreTesting}"
+    const val runner = "androidx.test:runner:${Versions.runner}"
     // endregion
+
 
     @JvmStatic
     fun isNonStable(version: String): Boolean {
