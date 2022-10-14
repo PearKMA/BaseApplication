@@ -7,7 +7,12 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.BaseMediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
+import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
 
 /**
@@ -53,6 +58,7 @@ open class ExoPlayerHelper(
     }
     var listener: IExoPlayerCallback? = null
     private var mediaItem: MediaItem? = null
+    private var mediaSource: BaseMediaSource? = null
     private var player: ExoPlayer? = null
     private var playWhenReady = true
     private var currentItem = 0
@@ -85,11 +91,24 @@ open class ExoPlayerHelper(
         player?.repeatMode = if (!enable) Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ALL
     }
 
-    open fun setMedia(media: MediaItem) {
+    open fun setMedia(media: MediaItem, simpleCache: SimpleCache? = null) {
         mediaItem = media
-        if (player != null) {
-            player?.setMediaItem(mediaItem!!, true)
-            player?.prepare()
+        player?.let {
+            if (simpleCache != null) {
+                mediaSource = ProgressiveMediaSource.Factory(
+                    CacheDataSource.Factory()
+                        .setCache(simpleCache)
+                        .setUpstreamDataSourceFactory(
+                            DefaultHttpDataSource.Factory()
+                                .setAllowCrossProtocolRedirects(true)
+                        )
+                        .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+                ).createMediaSource(media)
+                it.setMediaSource(mediaSource!!, true)
+            } else {
+                it.setMediaItem(mediaItem!!, true)
+            }
+            it.prepare()
         }
     }
 
@@ -129,6 +148,15 @@ open class ExoPlayerHelper(
     open fun changeVolume(volume: Float) {
         this.volume = volume
         player?.volume = volume
+    }
+
+    open fun onRestoreStatePlayWhenReady() {
+        player?.playWhenReady = playWhenReady
+    }
+
+    open fun onSavedStatePlayWhenReady() {
+        playWhenReady = player?.playWhenReady ?: playWhenReady
+        player?.playWhenReady = false
     }
     // endregion
 
@@ -183,15 +211,22 @@ open class ExoPlayerHelper(
                 exoPlayer.volume = volume
                 exoPlayer.seekTo(currentItem, playbackPosition)
 
-                if (mediaItem != null) {
+                if (mediaSource != null) {
+                    exoPlayer.setMediaSource(mediaSource!!)
+                    exoPlayer.prepareSource()
+                } else if (mediaItem != null) {
                     exoPlayer.setMediaItem(mediaItem!!)
-                    if (playWhenReady) {
-                        audioHelper.tryPlayback()
-                    }
-                    exoPlayer.prepare()
+                    exoPlayer.prepareSource()
                 }
             }
         handler.post(mRunnable)
+    }
+
+    private fun ExoPlayer.prepareSource() {
+        if (playWhenReady) {
+            audioHelper.tryPlayback()
+        }
+        prepare()
     }
 
 
