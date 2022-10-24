@@ -7,6 +7,7 @@ object Versions {
     const val appcompat = "1.5.0"
     const val base = "0.2.1"
     const val cameraXVersion = "1.1.0"
+    const val cameraViewVersion = "2.7.2"
     const val constraintLayout = "2.1.4"
     const val coreKtx = "1.8.0"
     const val coreTesting = "2.1.0"

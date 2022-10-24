@@ -97,9 +97,12 @@ object Deps {
     //camera X
     const val camera2 = "androidx.camera:camera-camera2:${Versions.cameraXVersion}"
     const val cameraLifecycle = "androidx.camera:camera-lifecycle:${Versions.cameraXVersion}"
-    const val cameraView = "androidx.camera:camera-view:${Versions.cameraXVersion}"
+    const val cameraXView = "androidx.camera:camera-view:${Versions.cameraXVersion}"
 
     const val guava = "com.google.guava:guava:${Versions.guava}"
+
+    // camera view
+    const val cameraView = "com.otaliastudios:cameraview:${Versions.cameraViewVersion}"
 
     //flexbox
     const val flexbox = "com.google.android.flexbox:flexbox:${Versions.flexbox}"
